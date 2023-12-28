@@ -4,8 +4,8 @@ package com.chen.ws;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.chen.config.WebSocketConfig;
 import com.google.gson.Gson;
-import com.chen.config.HttpSessionConfig;
 import com.chen.model.domain.Chat;
 import com.chen.model.domain.Team;
 import com.chen.model.domain.User;
@@ -39,12 +39,11 @@ import static com.chen.constants.UserConstants.USER_LOGIN_STATE;
 /**
  * WebSocket服务
  *
- * @author OchiaMalu
- * @date 2023/06/22
+ * @author
  */
 @Component
+@ServerEndpoint(value = "/websocket/{userId}/{teamId}", configurator = WebSocketConfig.class)
 @Slf4j
-@ServerEndpoint(value = "/websocket/{userId}/{teamId}", configurator = HttpSessionConfig.class)
 public class WebSocket {
     /**
      * 保存队伍的连接信息
@@ -86,7 +85,8 @@ public class WebSocket {
     /**
      * http会话
      */
-    private HttpSession httpSession;
+    HttpSession httpSession;
+
 
     /**
      * 上网数
@@ -162,7 +162,7 @@ public class WebSocket {
     }
 
     /**
-     * 发送消息
+     * 服务端发送消息给目标用户
      *
      * @param message 消息
      * @throws IOException ioexception
@@ -172,7 +172,7 @@ public class WebSocket {
     }
 
     /**
-     * 开放
+     * 连接建立成功调用的方法
      *
      * @param session 会话
      * @param userId  用户id
@@ -180,7 +180,7 @@ public class WebSocket {
      * @param config  配置
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam(value = "userId") String userId, @PathParam(value = "teamId") String teamId, EndpointConfig config) {
+    public void onOpen(Session session, @PathParam(value = "userId") String userId, @PathParam(value = "teamId") String teamId, EndpointConfig config ) {
         try {
             if (StringUtils.isBlank(userId) || "undefined".equals(userId)) {
                 sendError(userId, "参数有误");
@@ -217,7 +217,7 @@ public class WebSocket {
     }
 
     /**
-     * 关闭
+     * 连接关闭调用的方法
      *
      * @param userId  用户id
      * @param teamId  团队id
@@ -244,10 +244,12 @@ public class WebSocket {
     }
 
     /**
-     * 消息
+     * 收到客户端消息后调用的方法
+     * 后台收到客户端发送过来的消息
+     * onMessage 是一个消息的中转站
+     * 接受 浏览器端 socket.send 发送过来的 json数据
      *
-     * @param message 消息
-     * @param userId  用户id
+     * @param message 客户端发送过来的消息
      */
     @OnMessage
     public void onMessage(String message, @PathParam("userId") String userId) {
@@ -441,7 +443,7 @@ public class WebSocket {
     }
 
     /**
-     * 给所有用户
+     * 服务端发送消息给所有客户端
      */
     public void sendAllUsers() {
         HashMap<String, List<WebSocketVO>> stringListHashMap = new HashMap<>(0);
