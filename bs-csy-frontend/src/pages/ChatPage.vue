@@ -162,7 +162,9 @@ onMounted(async () => {
   init()
   await nextTick()
   const lastElement = chatRoom.value.lastElementChild
-  lastElement.scrollIntoView()
+  if (lastElement !== null) {
+    lastElement.scrollIntoView()
+  }
 })
 
 const init = () => {
@@ -170,15 +172,14 @@ const init = () => {
   if (typeof (WebSocket) == "undefined") {
     showFailToast("您的浏览器不支持WebSocket")
   } else {
-    // todo 修改为后端启动地址和端口
-    let socketUrl = `ws://localhost:8105/api/websocket/${uid}/${stats.value.team.teamId}`
-    // let socketUrl = `ws://pt.kongshier.top:8105/api/websocket/${uid}/${stats.value.team.teamId}`
+    let socketUrl = `ws://127.0.0.1:8105/api/websocket/${uid}/${stats.value.team.teamId}`
     if (socket != null) {
       socket.close();
       socket = null;
     }
     // 开启一个websocket服务
     socket = new WebSocket(socketUrl);
+    console.log("socket",socket)
     //打开事件
     socket.onopen = function () {
       startHeartbeat();

@@ -17,7 +17,7 @@
     <van-divider/>
     <van-cell @click="toAIChat">
       <template #title>
-        <span class="cell-span">AI 助手</span>
+        <span class="cell-span">AI 聊天</span>
       </template>
       <template #icon>
         <div class="icon_area">
@@ -68,7 +68,7 @@
         <span class="cell-span">公共聊天室</span>
       </template>
       <template #label>
-        <span class="cell-span">CAMPUS官方聊天室</span>
+        <span class="cell-span">INTEREST官方聊天室</span>
       </template>
       <template #icon>
         <div class="icon_area">
@@ -136,7 +136,8 @@ const toHallChat = () => {
   router.push("/chat")
 }
 const toAIChat = () => {
-  window.open("https://c.binjie.fun/", "_blank");
+  alert("暂时没有接入AI聊天，请耐心等待")
+  // window.open("https://c.binjie.fun/", "_blank");
 }
 </script>
 

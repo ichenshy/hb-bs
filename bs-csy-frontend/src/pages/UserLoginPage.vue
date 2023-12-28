@@ -47,6 +47,7 @@ import myAxios from "../plugins/my-axios.js";
 import {showFailToast, showSuccessToast} from "vant";
 import {useRoute, useRouter} from "vue-router";
 import campusImage from "../assets/campus.jpg"
+import {useCache} from "../config/useCache.ts";
 
 const userAccount = ref('');
 const password = ref('');
@@ -60,6 +61,8 @@ const onSubmit = async () => {
   if (response.data.code === 0 && response.data.data) {
     sessionStorage.setItem("token", response.data.data)
     showSuccessToast("登录成功")
+    const { wsCache } = useCache()
+    wsCache.set("userInfo", response.data.data)
     window.location.href = <string>route.query.redirectUrl ?? '/'
   } else {
     showFailToast("登录失败" + (response.data.description ? `,${response.data.description}` : ''))

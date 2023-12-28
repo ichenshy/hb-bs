@@ -1,6 +1,7 @@
 package com.chen.config;
 
 import com.chen.common.JacksonObjectMapper;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author ChenShengyuan
  */
-@Configuration
+@SpringBootConfiguration
 public class WebMvcConfig implements WebMvcConfigurer {
     /**
      * 扩展消息转换器
@@ -34,21 +35,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 添加歌珥映射
+     *  跨域配置
      *
      * @param registry 注册表
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        /**
+         * 所有请求都允许跨域，使用这种配置就不需要
+         * 在interceptor中配置header了
+         */
         registry.addMapping("/**")
-                // 设置允许跨域请求的域名
-                // 当**Credentials为true时，**Origin不能为星号，需为具体的ip地址【如果接口不带cookie,ip无需设成具体ip】
-                .allowedOriginPatterns("http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://pt.kongshier.top/api", "http://pt.kongshier.top")
-                // 是否允许证书 不再默认开启
                 .allowCredentials(true)
-                // 设置允许的方法
-                .allowedMethods("*")
-                // 跨域允许时间
+                .allowedOriginPatterns("*")
+                .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
+                .allowedHeaders("*")
                 .maxAge(3600);
     }
 }

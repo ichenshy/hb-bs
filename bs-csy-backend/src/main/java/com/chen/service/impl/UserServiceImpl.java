@@ -589,6 +589,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (StringUtils.isNotBlank(username)) {
                 throw new BusinessException(ErrorCode.NOT_LOGIN);
             }
+            long userNum = this.count();
+            if (userNum <= 10) {
+                Page<User> userPage = this.page(new Page<>(currentPage, PAGE_SIZE));
+                List<UserVO> userVOList = userPage.getRecords().stream().map((user) -> {
+                    UserVO userVO = new UserVO();
+                    BeanUtils.copyProperties(user, userVO);
+                    return userVO;
+                }).collect(Collectors.toList());
+                Page<UserVO> userVOPage = new Page<>();
+                userVOPage.setRecords(userVOList);
+                return userVOPage;
+            }
             return this.getRandomUser();
         }
     }
