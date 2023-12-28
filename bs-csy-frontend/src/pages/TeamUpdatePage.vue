@@ -48,6 +48,11 @@
                     placeholder="请输入密码"
                     :rules="[{ required: true, message: '请输入密码' }]"
             />
+          <van-field name="stepper" style="margin: 10px 0" label="请选择人数：">
+            <template #input>
+              <van-stepper v-model="updateTeamData.maxNum" min="1" max="10"/>
+            </template>
+          </van-field>
         </van-cell-group>
         <div style="margin: 16px;">
             <van-button round block type="primary" native-type="submit">

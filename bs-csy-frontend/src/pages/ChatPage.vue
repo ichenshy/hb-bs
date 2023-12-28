@@ -172,7 +172,8 @@ const init = () => {
   if (typeof (WebSocket) == "undefined") {
     showFailToast("您的浏览器不支持WebSocket")
   } else {
-    let socketUrl = `ws://127.0.0.1:8105/api/websocket/${uid}/${stats.value.team.teamId}`
+    // let socketUrl = `ws://127.0.0.1:8105/api/websocket/11/11`
+     let socketUrl = `ws://127.0.0.1:8105/api/websocket/${uid}/${stats.value.team.teamId}`
     if (socket != null) {
       socket.close();
       socket = null;

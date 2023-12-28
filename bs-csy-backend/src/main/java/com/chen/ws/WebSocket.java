@@ -2,6 +2,7 @@ package com.chen.ws;
 
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.chen.config.WebSocketConfig;
@@ -18,7 +19,10 @@ import com.chen.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -39,7 +43,7 @@ import static com.chen.constants.UserConstants.USER_LOGIN_STATE;
 /**
  * WebSocket服务
  *
- * @author
+ *
  */
 @Component
 @ServerEndpoint(value = "/websocket/{userId}/{teamId}", configurator = WebSocketConfig.class)
@@ -85,8 +89,10 @@ public class WebSocket {
     /**
      * http会话
      */
-    HttpSession httpSession;
+//    HttpSession httpSession;
 
+    private StringRedisTemplate stringRedisTemplate = SpringUtil.getBean(StringRedisTemplate.class);
+    Gson gson = new Gson();
 
     /**
      * 上网数
@@ -180,17 +186,19 @@ public class WebSocket {
      * @param config  配置
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam(value = "userId") String userId, @PathParam(value = "teamId") String teamId, EndpointConfig config ) {
+    public void onOpen(Session session, @PathParam(value = "userId") String userId, @PathParam(value = "teamId") String teamId, EndpointConfig config) {
         try {
             if (StringUtils.isBlank(userId) || "undefined".equals(userId)) {
                 sendError(userId, "参数有误");
                 return;
             }
-            HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-            User user = (User) httpSession.getAttribute(USER_LOGIN_STATE);
+//            HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+//            User user = (User) httpSession.getAttribute(USER_LOGIN_STATE);
+            String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+            User user = gson.fromJson(userStr, User.class);
             if (user != null) {
                 this.session = session;
-                this.httpSession = httpSession;
+//                this.httpSession = httpSession;
             }
             if (!"NaN".equals(teamId)) {
                 if (!ROOMS.containsKey(teamId)) {
@@ -296,7 +304,9 @@ public class WebSocket {
         if (user.getId() == team.getUserId() || user.getRole() == ADMIN_ROLE) {
             ChatMessageVO.setIsAdmin(true);
         }
-        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+//        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+        String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+        User loginUser = gson.fromJson(userStr, User.class);
         if (loginUser.getId() == user.getId()) {
             ChatMessageVO.setIsMy(true);
         }
@@ -328,7 +338,9 @@ public class WebSocket {
         if (user.getRole() == ADMIN_ROLE) {
             ChatMessageVO.setIsAdmin(true);
         }
-        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+//        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+        String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+        User loginUser = gson.fromJson(userStr, User.class);
         if (loginUser.getId() == user.getId()) {
             ChatMessageVO.setIsMy(true);
         }
@@ -348,7 +360,9 @@ public class WebSocket {
      */
     private void privateChat(User user, Long toId, String text, Integer chatType) {
         ChatMessageVO ChatMessageVO = chatService.chatResult(user.getId(), toId, text, chatType, DateUtil.date(System.currentTimeMillis()));
-        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+//        User loginUser = (User) this.httpSession.getAttribute(USER_LOGIN_STATE);
+        String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+        User loginUser = gson.fromJson(userStr, User.class);
         if (loginUser.getId() == user.getId()) {
             ChatMessageVO.setIsMy(true);
         }

@@ -193,13 +193,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 3. 用户脱敏
         User safetyUser = getSafetyUser(userInDatabase);
         // 4. 记录用户的登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
-        request.getSession().setMaxInactiveInterval(900);
+//        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
+//        request.getSession().setMaxInactiveInterval(900);
         String token = UUID.randomUUID().toString(true);
         Gson gson = new Gson();
         String userStr = gson.toJson(safetyUser);
         stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY + token, userStr);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, Duration.ofMinutes(15));
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE,userStr);
+        stringRedisTemplate.expire(USER_LOGIN_STATE, Duration.ofMinutes(15));
         return token;
     }
 
@@ -243,7 +245,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         stringRedisTemplate.delete(LOGIN_USER_KEY + token);
-        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        stringRedisTemplate.delete(USER_LOGIN_STATE);
+//        request.getSession().removeAttribute(USER_LOGIN_STATE);
         return 1;
     }
 
@@ -282,7 +285,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+//        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+        Gson gson = new Gson();
+        User loginUser = gson.fromJson(userStr, User.class);
+
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -314,8 +321,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Gson gson = new Gson();
         User user = gson.fromJson(userStr, User.class);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, TimeUnit.MINUTES);
-        request.getSession().setAttribute(USER_LOGIN_STATE, user);
-        request.getSession().setMaxInactiveInterval(900);
+//        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+//        request.getSession().setMaxInactiveInterval(900);
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE,userStr);
+        stringRedisTemplate.expire(USER_LOGIN_STATE, Duration.ofMinutes(15));
         return user;
     }
 
@@ -324,8 +333,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (request == null) {
             return false;
         }
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        if (userObj == null) {
+//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
+        Gson gson = new Gson();
+        User user = gson.fromJson(userStr, User.class);
+        if (user == null) {
             return false;
         }
         return true;

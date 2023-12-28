@@ -32,7 +32,7 @@ import UserSignPage from "../pages/UserSignPage.vue";
 import UserMyFriendsPage from "../pages/UserMyFriendsPage.vue";
 
 const routes = [
-    {path: '/', title: "CAMPUS 校园伙伴", component: Index},
+    {path: '/', title: "交个朋友-伙伴匹配系统", component: Index},
     {path: '/search', title: "搜索", component: Search},
     {path: '/search/userList', title: "搜索到的用户", component: SearchResult},
     {path: '/team', title: "队伍", component: Team},

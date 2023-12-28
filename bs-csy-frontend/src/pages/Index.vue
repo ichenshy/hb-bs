@@ -10,11 +10,11 @@
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white" lazy-render
                style="width: 90%;height: 150px;margin: 0 auto">
       <van-swipe-item v-for="image in Images" :key="image">
-        <img :src="image" style="width: 100%;height: 150px"/>
+        <img :src="image" style="width: 100%;height: 200px"/>
       </van-swipe-item>
     </van-swipe>
     <van-tabs v-model:active="active">
-      <van-tab title="🏫校园寻友">
+      <van-tab title="伙伴匹配">
         <van-pull-refresh
             v-model="refreshLoading"
             success-text="刷新成功"

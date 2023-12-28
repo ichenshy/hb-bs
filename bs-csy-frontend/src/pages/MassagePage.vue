@@ -55,7 +55,13 @@
         <span class="cell-span">好友申请</span>
       </template>
       <template #icon>
-        <van-badge>
+        <van-badge v-if="friendNum===0">
+          <div class="icon_area">
+            <van-icon name="bell" size="25"
+                      style="margin-left: 12px;margin-top: 13px;color: #e89817"/>
+          </div>
+        </van-badge>
+        <van-badge v-if="friendNum>0" :content="friendNum">
           <div class="icon_area">
             <van-icon name="bell" size="25"
                       style="margin-left: 12px;margin-top: 13px;color: #e89817"/>
@@ -107,6 +113,7 @@ import favicon from "../../public/favicon.ico"
 const teamList = ref()
 const likeNum = ref(0)
 const blogNum = ref(0)
+const friendNum = ref(0)
 onMounted(async () => {
   let res = await myAxios.get("/team/list/my/join/all");
   if (res?.data.code === 0) {
@@ -119,6 +126,15 @@ onMounted(async () => {
   let res3 = await myAxios.get("/message/blog/num");
   if (res3?.data.code === 0) {
     blogNum.value = Number(res3.data.data)
+  }
+  let res4 = await myAxios.get("/friends/getRecords");
+  if (res4?.data.code === 0) {
+    const resList = res4.data.data
+    for (let i = 0; i < resList.length; i++) {
+      if (resList[i].status === 0) {
+        friendNum.value += 1
+      }
+    }
   }
 })
 let router = useRouter();

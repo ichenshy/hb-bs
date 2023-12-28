@@ -22,7 +22,7 @@
       <van-icon name="add-o" size="40" class="add-blog-btn"/>
     </van-tabbar-item>
     <van-tabbar-item v-if="hasMessage" icon="chat-o" name="chat" class="message"
-                     @click="checkLogin('/message',3)" dot>
+                     @click="checkLogin('/message',3)" dot> 消息
     </van-tabbar-item>
     <van-tabbar-item v-else icon="chat-o" name="message" class="message" @click="checkLogin('/message',3)">
       消息
@@ -40,7 +40,7 @@ import myAxios from "../plugins/my-axios.js";
 
 const hasMessage = ref(false)
 let router = useRouter();
-const DEFAULT_TITLE = "CAMPUS 校园伙伴"
+const DEFAULT_TITLE = "交个朋友-基于微服务的伙伴匹配系统"
 const title = ref(DEFAULT_TITLE)
 const active = ref(0)
 router.beforeEach(async (to) => {
@@ -48,7 +48,7 @@ router.beforeEach(async (to) => {
   const route = routes.find((routes) => {
     return routes.path === toPath
   })
-  document.title = " CAMPUS 校园伙伴"
+  document.title = "交个朋友-基于微服务的伙伴匹配系统"
   title.value = route?.title ?? DEFAULT_TITLE
   if (to.path !== '/user/login') {
     let res = await myAxios.get("/message");
