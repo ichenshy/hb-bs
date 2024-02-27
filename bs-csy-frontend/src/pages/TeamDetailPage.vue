@@ -86,7 +86,7 @@ const toChat = () => {
     path: "/chat",
     query: {
       teamId: team.value.id,
-      teamName: team.value.teamName,
+      teamName: team.value.name,
       teamType: 2
     }
   })

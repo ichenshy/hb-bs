@@ -15,7 +15,7 @@ public interface SystemConstants {
     /**
      * 电子邮件发送邮箱
      */
-    String EMAIL_FROM = "linzhehao1108@126.com";
+    String EMAIL_FROM = "i.chenshy@qq.com";
 
     /**
      * 默认缓存页数

@@ -7,7 +7,7 @@
           finished-text="🌈请坚持每天签到哦🌟"
           @load="onLoad"
       >
-        <van-cell center v-for="sign in signList" :key="sign" :title="`&nbsp&nbsp`+sign+'号'">
+        <van-cell center v-for="sign in signList" :key="sign" :title="`&nbsp&nbsp`+sign.signDate+'号！积分+'+sign.fraction">
           <template #icon>
             <van-icon name="star" style="color: #0854f1"/>
           </template>
@@ -38,9 +38,10 @@ const onLoad = async () => {
     refreshing.value = false;
   }
   if (res.data.code === 0) {
-    res.data.data.forEach((sign: any) => {
-      signList.value.push(sign.signDate)
-    })
+    // res.data.data.forEach((sign: any) => {
+    //   signList.value.push(sign.signDate)
+    // })
+    signList.value = res.data.data
   }
   loading.value = false;
   finished.value = true;
@@ -60,7 +61,7 @@ const onRefresh = () => {
 
 <style scoped>
 #userSignPage {
-  margin: -20px 100px 0;
+  margin: -20px 70px 0;
 
 }
 

@@ -8,11 +8,11 @@
     </van-nav-bar>
   </van-sticky>
   <van-row justify="center">
-    <van-image
-        width="343"
-        :src= campusImage
-        style="background-position:center"
-    />
+<!--    <van-image-->
+<!--        width="343"-->
+<!--        :src= campusImage-->
+<!--        style="background-position:center"-->
+<!--    />-->
   </van-row>
   <div v-if="one">
     <van-form @submit="onSubmit">

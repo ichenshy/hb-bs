@@ -2,6 +2,9 @@ package com.chen.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chen.model.domain.Sign;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 /**
 * @author Shier
@@ -9,5 +12,13 @@ import com.chen.model.domain.Sign;
 * @createDate 2023-09-16 20:28:39
 */
 public interface SignService extends IService<Sign> {
-
+    /**
+     * 每日签到
+     *
+     * @param userId 用户id
+     * @param signDate 签字日期
+     * @return {@link Integer}
+     */
+    @Transactional(rollbackFor = Exception.class)
+    Integer sign(Long userId, LocalDate signDate);
 }

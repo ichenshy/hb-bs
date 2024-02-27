@@ -51,6 +51,10 @@ public class Sign implements Serializable {
      * 是否补签 0-不补签 1-补签
      */
     private Integer isBackup;
+    /**
+     * 积分
+     */
+    private Integer fraction;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

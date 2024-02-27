@@ -1,11 +1,12 @@
 <template>
   <div id="login">
     <van-row justify="center">
-      <van-image
-          width="343"
-          :src=campusImage
-          style="background-position:center"
-      />
+<!--      todo 找到合适的图片替换-->
+<!--      <van-image-->
+<!--          width="343"-->
+<!--          :src=campusImage-->
+<!--          style="background-position:center"-->
+<!--      />-->
     </van-row>
     <van-form @submit="onSubmit">
       <van-cell-group inset style="margin: 0 30px">

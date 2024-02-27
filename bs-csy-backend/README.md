@@ -1,54 +1,19 @@
 <p align=center>
-   <img src="https://github.com/kongshier/shierbi-backend/assets/94662685/9d677ecc-6e12-4ab1-b182-e3102d33a9d5"/>
+基于微服务与Vue3的兴趣伙伴组队平台的设计与实现
 </p>
-
-<p align=center>
-   SUPER速配-伙伴匹配系统
-</p>
-<p align="center">
-<a target="_blank" href="https://gitee.com/ochiamaluo/super-backend">
-		<img src="https://img.shields.io/badge/JDK-1.8-green.svg" ></img>
-        <img src="https://img.shields.io/badge/nodejs-16.20.0-blue" ></img>
-        <img src="https://img.shields.io/badge/springboot-2.6.4-green" ></img>
-        <img src="https://img.shields.io/badge/vue-3.2-blue" ></img>
-		<img src="https://img.shields.io/badge/vant-4.3.1-green" ></img>
-        <img src="https://img.shields.io/badge/knife4j-2.0.7-red" ></img>
-        <img src="https://img.shields.io/badge/mybatis--plus-3.5.1-green" ></img>
-		<img src="https://img.shields.io/badge/websocket-2.6.4-red" ></img>
-		<img src="https://img.shields.io/badge/MySQL-8.0.20-red" ></img>
-		<img src="https://img.shields.io/badge/redis-5.0.14-red" ></img>
-		<img src="https://img.shields.io/badge/gson-2.8.9-gree" ></img>
-		<img src="https://img.shields.io/badge/aliyunOss-3.15.1-blue" ></img>
-</a></p>
 
 ## 项目介绍
-
-校园伙伴匹配（CAMPUS 伙伴），一个前后端分离的用户匹配系统，前端使用 **Vite + Vue3 + Vant4** ，后端使用 **SpringBoot +
+基于微服务与Vue3的兴趣伙伴组队平台的设计与实现，一个前后端分离的用户匹配系统，前端使用 **Vite + Vue3 + Vant4** ，后端使用 **SpringBoot +
 MyBatis-Plus + MySQL + Redis** 等技术，使用 **WebSocket** 实现实时通信，并结合 **阿里云SDK** 完成图片上传。本项目使用Apache
 License Version 2.0开源协议。
-
 #### 前端地址:
 
-Gitee： https://gitee.com/kcsen/campus-partner-frontend.git
-
-Github： https://github.com/kongshier/campus-partner-frontend.git
-
 #### 后端地址:
-Gitee：https://gitee.com/kcsen/campus-backend-master.git
-
-GitHub：https://github.com/kongshier/campus-backend-master.git
 
 ## 在线体验
 
-http://pt.kongshier.top
-
 账号可以自行注册，一切聊天、评论需遵守中华人民共和国有关法律规定。
 
-仅支持有效手机号注册，请使用以下账号直接登录：
-
-账号：admin
-
-密码：12345678
 
 ## 项目背景
 
@@ -56,12 +21,29 @@ http://pt.kongshier.top
 
 ## 核心功能
 
-1. 用户注册和登录：用户可以通过注册账号并登录使用该网站。
-2. 标签匹配：用户可以选择自己的技能和需求标签，系统会根据标签匹配合适的队友。
-3. 组队功能：用户可以与其他用户组建队伍，一起参加校园竞赛。
-4. 帖文发布、点赞和关注：用户可以发布自己的帖文，其他用户可以对其进行点赞和关注，以便更好地了解和交流。
-5. 实时聊天：队伍中的用户可以进行实时聊天，方便沟通和协作。
-6. 用户管理：管理员可以对用户进行管理，包括审核用户信息和处理用户投诉等。
+[//]: # ()
+[//]: # (1. 用户注册和登录：用户可以通过注册账号并登录使用该网站。)
+
+[//]: # (2. 标签匹配：用户可以选择自己的技能和需求标签，系统会根据标签匹配合适的队友。)
+
+[//]: # (3. 组队功能：用户可以与其他用户组建队伍，一起参加校园竞赛。)
+
+[//]: # (4. 帖文发布、点赞和关注：用户可以发布自己的帖文，其他用户可以对其进行点赞和关注，以便更好地了解和交流。)
+
+[//]: # (5. 实时聊天：队伍中的用户可以进行实时聊天，方便沟通和协作。)
+
+[//]: # (6. 用户管理：管理员可以对用户进行管理，包括审核用户信息和处理用户投诉等。)
+
+1. 用户登录和注册：首次访问除首页外的页面需要注册登录，输入相应的账号密码可以完成登录，登录之后默认实现在规定时间免登录。
+2. 个人信息：可以查看个人的详细信息，可以进行修改信息等操作。
+3. 标签系统：每个人都有自己的标签，可以在找伙伴页面中选择标签来根据标签查询，新用户登录之后会先选择标签。
+4. 建房组队：队伍的创建、解散、过期以及成员变动都会向队长或成员发出消息提醒，队员可以查看当前加入的队伍与当前队伍成员。
+5. 推荐相似用户：通过相似度计算算法在首页中展示相似用户。
+6. 聊天室系统：好友之间可以进行聊天交流。
+7. 签到积分系统：可以查看历史签到信息，接入积分系统，签到可以叠加积分，后期积分达到一定的量级可以兑换一些电子礼品。
+8. 博客系统：可以分享有意思的博客，博客可以进行点赞、评论、收藏等操作。
+9. 消息提醒系统：有关于自己的消息都会在此模块进行显示，比如点赞，评论，好友申请等。
+10. 好友系统：可以添加好友来进行交流，添加好友必须经过对方同意才可以添加成功，添加之后可以在好友列表查看已经添加的好友。
 
 ## 项目亮点 
 

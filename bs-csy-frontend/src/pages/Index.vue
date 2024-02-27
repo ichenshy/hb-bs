@@ -14,7 +14,32 @@
       </van-swipe-item>
     </van-swipe>
     <van-tabs v-model:active="active">
-      <van-tab title="伙伴匹配">
+      <van-tab title="普通匹配">
+        <van-pull-refresh
+            v-model="refreshLoading"
+            success-text="刷新成功"
+            @refresh="onPtRefresh">
+          <van-search v-model="userSearch" placeholder="请输入搜索关键词" shape="round" @search="searchUser"/>
+          <van-list
+              v-model:loading="listLoading"
+              :finished="listFinished"
+              offset="0"
+              @load="onPtLoad"
+              style="margin: 15px"
+          >
+            <template #finished>
+              <span v-if="!searching">
+                <van-empty :image-size="[60, 40]" description="没有更多的伙伴了，试试搜索吧"/>
+              </span>
+            </template>
+            <UserCardList :user-list="ptUserList"/>
+          </van-list>
+          <van-back-top right="20px" bottom="60px"/>
+          <van-empty v-if="(!ptUserList ||　ptUserList.length===0) && !listLoading && !searching" image="search"
+                     description="暂无用户"/>
+        </van-pull-refresh>
+      </van-tab>
+      <van-tab title="算法匹配">
         <van-pull-refresh
             v-model="refreshLoading"
             success-text="刷新成功"
@@ -70,34 +95,32 @@
       </van-loading>
     </van-tabs>
   </div>
-
-
 </template>
 <script setup>
-import {onMounted, ref} from "vue";
 import myAxios from "../plugins/my-axios.js";
 import {showFailToast, showSuccessToast} from "vant";
 import UserCardList from "../components/UserCardList.vue";
 import BlogCardList from "../components/BlogCardList.vue";
 import Images from "../constants/teamImg.ts";
+import {ref} from 'vue';
 
 const searching = ref(false)
 const listLoading = ref(false)
 const listFinished = ref(false)
 const userList = ref([])
+const ptUserList = ref([])
 const refreshLoading = ref(false)
 const currentPage = ref(0)
 const userSearch = ref("")
+const text = ref("")
 const active = ref(0)
 const blogList = ref([])
 const blogListFinished = ref(false)
 const blogCurrentPage = ref(0)
-
 const blogLoad = async () => {
   blogCurrentPage.value++
   await getBlogList(blogCurrentPage.value)
 }
-
 const getBlogList = async (currentPage) => {
   let res = await myAxios.get("/blog/list", {
     params: {
@@ -155,7 +178,6 @@ const onRefresh = async () => {
   refreshLoading.value = false
   listLoading.value = false;
 }
-
 const blogRefresh = async () => {
   blogCurrentPage.value = 1
   blogList.value = []
@@ -179,6 +201,51 @@ const searchBlog = async () => {
   await getBlogList(blogCurrentPage.value)
   searching.value = false
 }
+const tenapi = async () => {
+  const a = await myAxios().get("https://tenapi.cn/v2/yiyan")
+  console.log(a)
+}
+
+async function getPtUserList(currentPage) {
+  const userListData = await myAxios.get("/user/page", {
+    params: {
+      currentPage: currentPage,
+      username: userSearch.value
+    }
+  })
+  if (userListData?.data.code === 0) {
+  } else {
+    showFailToast("加载失败")
+  }
+  if (userListData?.data.data.records.length === 0) {
+    listFinished.value = true
+    return
+  }
+  if (userListData?.data.data.records) {
+    userListData.data.data.records.forEach(user => {
+      if (user.tags) {
+        user.tags = JSON.parse(user.tags)
+      }
+    })
+    for (let i = 0; i < userListData.data.data.records.length; i++) {
+      ptUserList.value.push(userListData.data.data.records[i])
+    }
+  }
+}
+const onPtLoad = async () => {
+  currentPage.value++
+  await getPtUserList(currentPage.value)
+  listLoading.value = false;
+}
+const onPtRefresh = async () => {
+  currentPage.value = 1
+  ptUserList.value = []
+  listFinished.value = false
+  await getPtUserList(currentPage.value)
+  refreshLoading.value = false
+  listLoading.value = false;
+}
+
 </script>
 <style scoped>
 .my-swipe .van-swipe-item {

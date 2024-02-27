@@ -27,11 +27,11 @@ public class UserRegisterRequest implements Serializable {
     @ApiModelProperty(value = "手机号")
     private String phone;
 
-    // /**
-    //  * 代码
-    //  */
-    // @ApiModelProperty(value = "验证码")
-    // private String code;
+     /**
+      * 代码
+      */
+     @ApiModelProperty(value = "验证码")
+     private String code;
 
     /**
      * 用户帐户

@@ -16,7 +16,7 @@ import java.util.List;
  * @createDate 2023-05-07 19:56:01
  */
 public interface UserService extends IService<User> {
-    long userRegister(String phone, String userAccount, String userPassword, String checkPassword);
+    long userRegister(String phone, String userAccount, String userPassword, String checkPassword,String code);
 
     String userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
@@ -50,7 +50,7 @@ public interface UserService extends IService<User> {
 
     Page<UserVO> getRandomUser();
 
-    void updatePassword(String phone, String password, String confirmPassword);
+    void updatePassword(String phone, String password, String confirmPassword,String code);
 
     Page<UserVO> preMatchUser(long currentPage, String username, User loginUser);
 

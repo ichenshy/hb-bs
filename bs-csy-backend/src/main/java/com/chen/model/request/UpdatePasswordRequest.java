@@ -18,11 +18,11 @@ public class UpdatePasswordRequest {
      */
     @ApiModelProperty(value = "电话")
     private String phone;
-    // /**
-    //  * 验证码
-    //  */
-    // @ApiModelProperty(value = "验证码")
-    // private String code;
+     /**
+      * 验证码
+      */
+     @ApiModelProperty(value = "验证码")
+     private String code;
     /**
      * 密码
      */

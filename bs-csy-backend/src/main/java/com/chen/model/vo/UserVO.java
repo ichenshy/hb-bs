@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户签证官
+ * 用户
  *
  * @author ChenShengyuan
  * @date 2023/06/22

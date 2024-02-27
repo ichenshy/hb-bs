@@ -86,9 +86,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SignService signService;
 
     @Override
-    public long userRegister(String phone, String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String phone, String userAccount, String userPassword, String checkPassword,String code) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(phone, userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(phone, userAccount, userPassword, checkPassword,code)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
@@ -103,18 +103,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (phoneNum >= 1) {
             throw new BusinessException(ErrorCode.FORBIDDEN, "该手机号已注册");
         }
-        // String key = REGISTER_CODE_KEY + phone;
-        // Boolean hasKey = stringRedisTemplate.hasKey(key);
-        // if (Boolean.FALSE.equals(hasKey)) {
-        //     throw new BusinessException(ErrorCode.FORBIDDEN, "请先获取验证码");
-        // }
-        // String correctCode = stringRedisTemplate.opsForValue().get(key);
-        // if (correctCode == null) {
-        //     throw new BusinessException(ErrorCode.SYSTEM_ERROR);
-        // }
-        // if (!correctCode.equals(code)) {
-        //     throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
-        // }
+         String key = REGISTER_CODE_KEY + phone;
+         Boolean hasKey = stringRedisTemplate.hasKey(key);
+         if (Boolean.FALSE.equals(hasKey)) {
+             throw new BusinessException(ErrorCode.FORBIDDEN, "请先获取验证码");
+         }
+         String correctCode = stringRedisTemplate.opsForValue().get(key);
+         if (correctCode == null) {
+             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+         }
+         if (!correctCode.equals(code)) {
+             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
+         }
         // 账户不能包含特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         Matcher accountMatcher = Pattern.compile(validPattern).matcher(userAccount);
@@ -156,7 +156,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!saveResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
-        // stringRedisTemplate.delete(key);
+         stringRedisTemplate.delete(key);
         return user.getId();
     }
 
@@ -246,7 +246,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         stringRedisTemplate.delete(LOGIN_USER_KEY + token);
         stringRedisTemplate.delete(USER_LOGIN_STATE);
-//        request.getSession().removeAttribute(USER_LOGIN_STATE);
         return 1;
     }
 
@@ -285,7 +284,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-//        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
         Gson gson = new Gson();
         User loginUser = gson.fromJson(userStr, User.class);
@@ -321,8 +319,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Gson gson = new Gson();
         User user = gson.fromJson(userStr, User.class);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, TimeUnit.MINUTES);
-//        request.getSession().setAttribute(USER_LOGIN_STATE, user);
-//        request.getSession().setMaxInactiveInterval(900);
         stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE,userStr);
         stringRedisTemplate.expire(USER_LOGIN_STATE, Duration.ofMinutes(15));
         return user;
@@ -333,7 +329,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (request == null) {
             return false;
         }
-//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         String userStr = stringRedisTemplate.opsForValue().get(USER_LOGIN_STATE);
         Gson gson = new Gson();
         User user = gson.fromJson(userStr, User.class);
@@ -384,6 +379,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //                .collect(Collectors.toList());
 //    }
 
+    /**
+     * 最短距离算法匹配
+     *
+     * @param currentPage 当前页面
+     * @param loginUser 登录用户
+     * @return {@link Page}<{@link UserVO}>
+     */
     @Override
     public Page<UserVO> matchUser(long currentPage, User loginUser) {
         String tags = loginUser.getTags();
@@ -543,18 +545,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void updatePassword(String phone, String password, String confirmPassword) {
+    public void updatePassword(String phone, String password, String confirmPassword,String code) {
         if (!password.equals(confirmPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
         String key = USER_FORGET_PASSWORD_KEY + phone;
-        // String correctCode = stringRedisTemplate.opsForValue().get(key);
-        // if (correctCode == null) {
-        //     throw new BusinessException(ErrorCode.PARAMS_ERROR, "请先获取验证码");
-        // }
-        // if (!correctCode.equals(code)) {
-        //     throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
-        // }
+         String correctCode = stringRedisTemplate.opsForValue().get(key);
+         if (correctCode == null) {
+             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请先获取验证码");
+         }
+         if (!correctCode.equals(code)) {
+             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
+         }
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getPhone, phone);
         User user = this.getOne(userLambdaQueryWrapper);

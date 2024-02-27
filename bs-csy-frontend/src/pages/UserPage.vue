@@ -57,6 +57,12 @@
             <van-icon name="records" size="23" style="margin-bottom: 8px;color: #0c9dea"/>
           </template>
         </van-grid-item>
+<!--        //todo-->
+        <van-grid-item text="积分兑换" to="/my/fraction">
+          <template #icon>
+            <van-icon name="cash-back-record" size="32"/>
+          </template>
+        </van-grid-item>
         <van-grid-item text="联系作者" @click="customerService">
           <template #icon>
             <van-icon class-prefix="my-icon" name="fankui" size="23" style="margin-bottom: 8px;color: #0a0dd2"/>
@@ -132,7 +138,7 @@ const logout = async () => {
 const userSign = async (userId: any) => {
   let userSign = await myAxios.post("/user/sign/" + userId);
   if (userSign.data.code === 0) {
-    showSuccessToast("签到成功!")
+    showSuccessToast("签到成功!积分+" + userSign.data.data)
   } else {
     showFailToast("签到失败," + userSign.data.description)
   }

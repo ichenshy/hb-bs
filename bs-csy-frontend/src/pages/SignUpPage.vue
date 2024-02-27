@@ -1,11 +1,11 @@
 <template>
   <div id="signUpPage">
     <van-row justify="center">
-      <van-image
-          width="343"
-          :src=campusImage
-          style="background-position:center"
-      />
+<!--      <van-image-->
+<!--          width="343"-->
+<!--          :src=campusImage-->
+<!--          style="background-position:center"-->
+<!--      />-->
     </van-row>
     <van-form @submit="onSubmit">
       <van-cell-group inset>
@@ -16,12 +16,12 @@
             placeholder="请输入手机号"
             :rules="[{ required: true, message: '请填写手机号' }]"
         >
-          <!--        <template #button>-->
-          <!--          <van-button size="small" type="primary" @click="sendMessage">-->
-          <!--            <span v-if="!codeTime">发送验证码</span>-->
-          <!--            <span v-else>{{ codeTime }}秒</span>-->
-          <!--          </van-button>-->
-          <!--        </template>-->
+                  <template #button>
+                    <van-button size="small" type="primary" @click="sendMessage">
+                      <span v-if="!codeTime">发送验证码</span>
+                      <span v-else>{{ codeTime }}秒</span>
+                    </van-button>
+                  </template>
         </van-field>
         <van-field
             v-if="!lock"
@@ -93,47 +93,48 @@ const sendMessage = async () => {
 
       showNotify({message: '手机号格式错误'});
     }
-    // else {
-    //   let flag = countDown();
-    //   if (flag) {
-    //     const res = await myAxios.get("/user/message?phone=" + phone.value)
-    //     if (res?.data.code === 0) {
-    //       showSuccessToast("短信发送成功，15分钟内有效")
-    //       lock.value = false
-    //     } else {
-    //       showFailToast("短信发送失败," + res?.data.description ?? '')
-    //     }
-    //   }
-    // }
+    else {
+      let flag = countDown();
+      if (flag) {
+        const res = await myAxios.get("/user/message?phone=" + phone.value)
+        if (res?.data.code === 0) {
+          showSuccessToast("短信发送成功，15分钟内有效")
+          lock.value = false
+        } else {
+          lock.value = false
+          showFailToast("短信发送失败," + res?.data.description ?? '')
+        }
+      }
+    }
   }
 }
-//
-// const countDown = () => {
-//   if (codeTime.value > 0) {
-//     showFailToast("不能重复获取")
-//     return false;
-//   } else {
-//     codeTime.value = 60
-//     let time = setInterval(() => {
-//       codeTime.value--
-//       if (codeTime.value < 1) {
-//         clearInterval(time)
-//         codeTime.value = 0
-//       }
-//     }, 1000)
-//     return true;
-//   }
-// }
+
+const countDown = () => {
+  if (codeTime.value > 0) {
+    showFailToast("不能重复获取")
+    return false;
+  } else {
+    codeTime.value = 60
+    let time = setInterval(() => {
+      codeTime.value--
+      if (codeTime.value < 1) {
+        clearInterval(time)
+        codeTime.value = 0
+      }
+    }, 1000)
+    return true;
+  }
+}
 const onSubmit = async () => {
   sendMessage();
   if (phone.value === '') {
     showFailToast("请填写手机号")
     return
   }
-  // if (code.value === '') {
-  //   showFailToast("请发送验证码")
-  //   return
-  // }
+  if (code.value === '') {
+    showFailToast("请发送验证码")
+    return
+  }
   if (password.value === '' || confirmPassword.value === '') {
     showFailToast("请填写密码")
     return
