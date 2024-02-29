@@ -1,13 +1,8 @@
 package com.chen.controller;
 
 import cn.hutool.core.lang.UUID;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chen.model.domain.Standings;
-import com.chen.service.StandingsService;
-import com.chen.utils.SMSUtils;
-import com.google.gson.Gson;
 import com.chen.common.BaseResponse;
 import com.chen.common.ErrorCode;
 import com.chen.common.ResultUtils;
@@ -25,6 +20,7 @@ import com.chen.model.vo.UserVO;
 import com.chen.service.SignService;
 import com.chen.service.UserService;
 import com.chen.utils.ValidateCodeUtils;
+import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -36,7 +32,15 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -46,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -156,9 +159,6 @@ public class UserController {
      */
     @GetMapping("/message/update/email")
     @ApiOperation(value = "发送邮箱更新验证码")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "email", value = "邮箱"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<String> sendMailUpdateMessage(String email, HttpServletRequest request) throws MessagingException {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -191,8 +191,6 @@ public class UserController {
      */
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "userRegisterRequest", value = "用户注册请求参数")})
     public BaseResponse<String> userRegister(@RequestBody UserRegisterRequest userRegisterRequest, HttpServletRequest request) {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -228,9 +226,6 @@ public class UserController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "用户登录")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "userLoginRequest", value = "用户登录请求参数"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -262,34 +257,34 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 获取用户通过电话
-     *
-     * @param phone 电话
-     * @return {@link BaseResponse}<{@link String}>
-     */
-    @GetMapping("/forget")
-    @ApiOperation(value = "通过手机号查询用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "phone", value = "手机号")})
-    public BaseResponse<String> getUserByPhone(String phone) {
-        if (phone == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getPhone, phone);
-        User user = userService.getOne(userLambdaQueryWrapper);
-        if (user == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "该手机号未绑定账号");
-        } else {
-            String key = RedisConstants.USER_FORGET_PASSWORD_KEY + phone;
-            Integer code = ValidateCodeUtils.generateValidateCode(4);
-//            SMSUtils.sendMessage(phone, String.valueOf(code));
-            System.out.println(code);
-            stringRedisTemplate.opsForValue().set(key, String.valueOf(code), RedisConstants.USER_FORGET_PASSWORD_TTL, TimeUnit.MINUTES);
-            return ResultUtils.success(user.getUserAccount());
-        }
-    }
+//    /**
+//     * 获取用户通过电话
+//     *
+//     * @param phone 电话
+//     * @return {@link BaseResponse}<{@link String}>
+//     */
+//    @GetMapping("/getUserByPhone")
+//    @ApiOperation(value = "通过手机号查询用户")
+//    @ApiImplicitParams(
+//            {@ApiImplicitParam(name = "phone", value = "手机号")})
+//    public BaseResponse<String> getUserByPhone(String phone) {
+//        if (phone == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        userLambdaQueryWrapper.eq(User::getPhone, phone);
+//        User user = userService.getOne(userLambdaQueryWrapper);
+//        if (user == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "该手机号未绑定账号");
+//        } else {
+//            String key = RedisConstants.USER_FORGET_PASSWORD_KEY + phone;
+//            Integer code = ValidateCodeUtils.generateValidateCode(4);
+////            SMSUtils.sendMessage(phone, String.valueOf(code));
+//            System.out.println(code);
+//            stringRedisTemplate.opsForValue().set(key, String.valueOf(code), RedisConstants.USER_FORGET_PASSWORD_TTL, TimeUnit.MINUTES);
+//            return ResultUtils.success(user.getUserAccount());
+//        }
+//    }
 
     /**
      * 校验码
@@ -323,8 +318,6 @@ public class UserController {
      */
     @PutMapping("/forget")
     @ApiOperation(value = "修改密码")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "updatePasswordRequest", value = "修改密码请求")})
     public BaseResponse<String> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
         String phone = updatePasswordRequest.getPhone();
         String code = updatePasswordRequest.getCode();

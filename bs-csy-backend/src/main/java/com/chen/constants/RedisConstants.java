@@ -8,6 +8,7 @@ package com.chen.constants;
  */
 public interface RedisConstants {
     String LOGIN_USER_KEY = "campus:login:token:";
+    String LOGIN_ADMIN_KEY = "admin:login:token:";
 
     Long LOGIN_USER_TTL = 300L;
     /**

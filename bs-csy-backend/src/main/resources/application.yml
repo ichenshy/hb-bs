@@ -18,7 +18,7 @@ spring:
   jackson:
     time-zone: GMT+8
     date-format: java.text.SimpleDateFormat
-  # todo 邮箱配置
+  # 邮箱配置
   mail:
     host: smtp.qq.com
     username: i.chenshy@qq.com

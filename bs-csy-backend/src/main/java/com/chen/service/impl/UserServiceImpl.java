@@ -7,8 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.chen.common.ErrorCode;
 import com.chen.constants.UserConstants;
 import com.chen.exception.BusinessException;
@@ -18,9 +16,10 @@ import com.chen.model.domain.User;
 import com.chen.model.request.UserUpdateRequest;
 import com.chen.model.vo.UserVO;
 import com.chen.service.FollowService;
-import com.chen.service.SignService;
 import com.chen.service.UserService;
 import com.chen.utils.AlgorithmUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,13 +33,24 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.chen.constants.RedisConstants.*;
+import static com.chen.constants.RedisConstants.LOGIN_USER_KEY;
+import static com.chen.constants.RedisConstants.LOGIN_USER_TTL;
+import static com.chen.constants.RedisConstants.REGISTER_CODE_KEY;
+import static com.chen.constants.RedisConstants.USER_RECOMMEND_KEY;
+import static com.chen.constants.RedisConstants.USER_UPDATE_EMAIL_KEY;
+import static com.chen.constants.RedisConstants.USER_UPDATE_PHONE_KEY;
 import static com.chen.constants.SystemConstants.DEFAULT_CACHE_PAGE;
 import static com.chen.constants.SystemConstants.PAGE_SIZE;
 import static com.chen.constants.UserConstants.USER_LOGIN_STATE;
@@ -81,9 +91,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-
-    @Resource
-    private SignService signService;
 
     @Override
     public long userRegister(String phone, String userAccount, String userPassword, String checkPassword,String code) {
@@ -169,8 +176,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userAccount.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能小于4位");
         }
-        if (userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码不能小于8位");
+        if (userPassword.length() < 6) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码不能小于6位");
         }
         // 账户不能包含特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
@@ -549,7 +556,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!password.equals(confirmPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
-        String key = USER_FORGET_PASSWORD_KEY + phone;
+        String key = REGISTER_CODE_KEY + phone;
          String correctCode = stringRedisTemplate.opsForValue().get(key);
          if (correctCode == null) {
              throw new BusinessException(ErrorCode.PARAMS_ERROR, "请先获取验证码");
