@@ -9,4 +9,6 @@ public interface AdminService {
     String adminLogin(UserLoginRequest userLoginRequest);
 
     Map<String, Object> getInfo(HttpServletRequest request);
+
+    void logout(HttpServletRequest request);
 }

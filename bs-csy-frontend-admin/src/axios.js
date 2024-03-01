@@ -17,7 +17,7 @@ const service = axios.create({
 
 // 添加请求拦截器
 service.interceptors.request.use(function (config) {
-  // 
+  //
   // 往header头自动添加token
   const token = getToken()
   // 如果有token
@@ -41,7 +41,7 @@ service.interceptors.response.use(function (response) {
   // 如果获取失败则获取错误提示
   const msg = error.response.data.msg || "请求失败"
   // 如果非法token
-  if (msg == "非法token，请先登录！" || msg == "token已失效") {
+  if (msg === "非法token，请先登录！" || msg === "token已失效") {
     // 退出登陆并刷新
     store.dispatch("logout").finally(() => location.reload())
   }

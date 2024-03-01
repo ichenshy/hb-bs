@@ -3,6 +3,7 @@ package com.chen.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chen.model.domain.RouteInfo;
 import com.chen.model.domain.User;
 import com.chen.model.request.UserUpdateRequest;
 import com.chen.model.vo.UserVO;
@@ -53,5 +54,7 @@ public interface UserService extends IService<User> {
     void updatePassword(String phone, String password, String confirmPassword,String code);
 
     Page<UserVO> preMatchUser(long currentPage, String username, User loginUser);
+
+    List<RouteInfo> selectMenus();
 
 }

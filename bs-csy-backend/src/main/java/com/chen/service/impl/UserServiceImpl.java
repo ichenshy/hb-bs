@@ -12,6 +12,7 @@ import com.chen.constants.UserConstants;
 import com.chen.exception.BusinessException;
 import com.chen.mapper.UserMapper;
 import com.chen.model.domain.Follow;
+import com.chen.model.domain.RouteInfo;
 import com.chen.model.domain.User;
 import com.chen.model.request.UserUpdateRequest;
 import com.chen.model.vo.UserVO;
@@ -643,6 +644,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             return true;
         }).map(this::getSafetyUser).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RouteInfo> selectMenus() {
+        return userMapper.selectMenus();
     }
 }
 

@@ -18,22 +18,21 @@ export function getinfo(token) {
 
 // 退出登陆接口
 export function logout() {
-    return axios.post("/admin/logout")
+    return axios.post("/api/admin/logout")
 }
 
 
-//
 
 // 登陆接口
 export function updatepassword(username, password) {
-    return axios.post("/admin/login", {
+    return axios.post("/api/admin/login", {
         username,
         password
     })
 }
 
 export function updateuser(username, password) {
-    return axios.post("/admin/login", {
+    return axios.post("/api/admin/login", {
         username,
         password
     })

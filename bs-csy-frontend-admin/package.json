@@ -1,5 +1,5 @@
 {
-  "name": "linxi-admin",
+  "name": "csy-admin",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -12,6 +12,7 @@
     "@vueuse/core": "^9.3.0",
     "@vueuse/integrations": "^9.9.0",
     "axios": "^1.2.1",
+    "echarts": "^5.5.0",
     "element-plus": "^2.2.27",
     "jquery": "2.2.0",
     "nprogress": "^0.2.0",

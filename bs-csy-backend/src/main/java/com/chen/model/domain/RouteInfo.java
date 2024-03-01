@@ -4,15 +4,11 @@ import lombok.Data;
 
 @Data
 public class RouteInfo {
+    private Long id;
     private String path;
     private String component;
-    private String name;
+    private String title;
     private String icon;
+    private Long parentId;
 
-    public RouteInfo(String path, String component, String name,String icon) {
-        this.path = path;
-        this.component = component;
-        this.name = name;
-        this.icon = icon;
-    }
 }

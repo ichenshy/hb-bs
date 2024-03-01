@@ -11,7 +11,7 @@ export function TabList() {
   const activeTab = ref(route.path);
   const tabList = ref([
     {
-      title: "后台首页",
+      title: "首页",
       // 默认标签
       path: "/home",
     },
@@ -85,7 +85,7 @@ export function TabList() {
       activeTab.value = "/home";
       tabList.value = [
         {
-          title: "后台首页",
+          title: "首页",
           path: "/home",
         },
       ];

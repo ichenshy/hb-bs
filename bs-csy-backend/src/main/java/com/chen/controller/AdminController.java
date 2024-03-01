@@ -25,12 +25,18 @@ public class AdminController {
     public Map<String, String> admin(@RequestBody UserLoginRequest userLoginRequest) {
         String token = adminService.adminLogin(userLoginRequest);
         HashMap<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token",token);
+        tokenMap.put("token", token);
         return tokenMap;
     }
+
     @PostMapping("/getInfo")
-    public  Map<String, Object> getInfo(HttpServletRequest request) {
+    public Map<String, Object> getInfo(HttpServletRequest request) {
         return adminService.getInfo(request);
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        adminService.logout(request);
     }
 }
 

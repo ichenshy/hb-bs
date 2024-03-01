@@ -4,8 +4,9 @@ import axios from '~/axios'
 // 获取请求ip接口
 export function ip() {
     // http://myip.ipip.net/json
-    return axios.get("/ip")
+    return axios.get("https://myip.ipip.net/json")
 }
+
 
 // 获取时间
 export function getDateTime(type) {

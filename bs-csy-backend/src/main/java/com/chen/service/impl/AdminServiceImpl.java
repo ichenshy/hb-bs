@@ -18,7 +18,6 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,33 +63,28 @@ public class AdminServiceImpl implements AdminService {
         String userStr = gson.toJson(userInDatabase);
         stringRedisTemplate.opsForValue().set(LOGIN_ADMIN_KEY + token, userStr);
         stringRedisTemplate.expire(LOGIN_ADMIN_KEY + token, Duration.ofMinutes(15));
-        // 4. 记录用户的登录态
         return token;
     }
 
 
     @Override
     public Map<String, Object> getInfo(HttpServletRequest request) {
-        List<RouteInfo> dynamicRoutes = Arrays.asList(
-                new RouteInfo("/home", "Index", "后台首页","HomeFilled"),
-                new RouteInfo("/card", "CardData", "卡片数据","UserFilled"),
-                new RouteInfo("/table", "TableData", "表格数据","UserFilled"),
-                new RouteInfo("/sys/config", "Config", "参数配置","UserFilled"),
-                new RouteInfo("/sys/menus", "MenusList", "菜单管理","UserFilled"),
-                new RouteInfo("/user", "User", "个人中心","UserFilled"),
-                new RouteInfo("/todolist", "Todolist", "签到任务","UserFilled"),
-                new RouteInfo("/todolog", "Todolog", "运行日志","UserFilled"),
-                new RouteInfo("/todolog", "Todolog", "运行日志1","UserFilled")
-        );
+        List<RouteInfo> routeInfos = userService.selectMenus();
         String token = request.getHeader("Token");
         String userStr = stringRedisTemplate.opsForValue().get(LOGIN_ADMIN_KEY + token);
         Gson gson = new Gson();
         User user = gson.fromJson(userStr, User.class);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("menus",dynamicRoutes);
+        map.put("menus",routeInfos);
         map.put("userInfo",user);
         return map;
 
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        String token = request.getHeader("Token");
+        stringRedisTemplate.delete(LOGIN_ADMIN_KEY + token);
     }
 
 

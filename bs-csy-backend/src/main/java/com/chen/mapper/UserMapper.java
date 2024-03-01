@@ -1,6 +1,7 @@
 package com.chen.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.chen.model.domain.RouteInfo;
 import com.chen.model.domain.User;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
 
     List<User> getRandomUser();
+
+    List<RouteInfo> selectMenus();
 }
 
 

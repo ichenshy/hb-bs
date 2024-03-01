@@ -39,4 +39,7 @@
             id
         LIMIT 10;
     </select>
+    <select id="selectMenus" resultType="com.chen.model.domain.RouteInfo">
+        select * from menus
+    </select>
 </mapper>
