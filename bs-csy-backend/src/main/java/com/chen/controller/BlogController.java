@@ -55,17 +55,15 @@ public class BlogController {
 //    private BloomFilter bloomFilter;
 
     /**
-     * 博客列表页面
+     * 列出博客页面
      *
      * @param currentPage 当前页面
-     * @param request     请求
+     * @param title 标题
+     * @param request 要求
      * @return {@link BaseResponse}<{@link Page}<{@link BlogVO}>>
      */
     @GetMapping("/list")
     @ApiOperation(value = "获取博文")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "currentPage", value = "当前页"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<Page<BlogVO>> listBlogPage(long currentPage, String title, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {

@@ -66,7 +66,7 @@ public class FileServiceImpl implements FileService {
             // 创建上传Object的Metadata
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(inputStream.available());
-            objectMetadata.setContentType(getcontentType(fileName.substring(fileName.lastIndexOf("."))));
+            objectMetadata.setContentType(getContentType(fileName.substring(fileName.lastIndexOf("."))));
             objectMetadata.setContentDisposition("attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
 
             // 调用oss实例中的方法实现上传
@@ -94,7 +94,7 @@ public class FileServiceImpl implements FileService {
      * @param filenameExtension 文件后缀
      * @return String
      */
-    public static String getcontentType(String filenameExtension) {
+    public static String getContentType(String filenameExtension) {
         if ("bmp".equalsIgnoreCase(filenameExtension)) {
             return "image/bmp";
         }

@@ -589,6 +589,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 userVOPage.setRecords(userVOList);
                 return userVOPage;
             }
+
+
+
+
             if (currentPage <= DEFAULT_CACHE_PAGE) {
                 Boolean hasKey = stringRedisTemplate.hasKey(key);
                 if (Boolean.TRUE.equals(hasKey)) {
@@ -607,13 +611,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 stringRedisTemplate.opsForValue().set(key, userVOPageStr);
                 return userVOPage;
             }
+
+
+
+
+
         } else {
             if (StringUtils.isNotBlank(username)) {
                 throw new BusinessException(ErrorCode.NOT_LOGIN);
             }
             long userNum = this.count();
             if (userNum <= 10) {
-                Page<User> userPage = this.page(new Page<>(currentPage, PAGE_SIZE));
+                Page<User> userPage = this.page(new Page<>(1, PAGE_SIZE));
                 List<UserVO> userVOList = userPage.getRecords().stream().map((user) -> {
                     UserVO userVO = new UserVO();
                     BeanUtils.copyProperties(user, userVO);

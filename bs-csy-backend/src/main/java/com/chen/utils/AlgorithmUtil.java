@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 最短编辑距离算法
+ * 匹配算法
  *
  * @author ChenShengyuan
- * @date 2023/06/22
+ * @date 2024/02/20
  */
 public class AlgorithmUtil {
     public static int minDistance(List<String> tagList1, List<String> tagList2) {

@@ -39,7 +39,6 @@ public class RedisLimiterManager {
             log.info("init rate = {}, interval = {}", rateLimiter.getConfig().getRate(), rateLimiter.getConfig().getRateInterval());
         }
         // 每当一个操作来了后，请求一个令牌
-        boolean canOp = rateLimiter.tryAcquire(1);
-        return canOp;
+        return rateLimiter.tryAcquire(1);
     }
 }
