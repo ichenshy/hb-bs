@@ -48,7 +48,7 @@ public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, Blo
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addComment(AddCommentRequest addCommentRequest, Long userId) {
         BlogComments blogComments = new BlogComments();
         blogComments.setUserId(userId);
@@ -95,7 +95,7 @@ public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, Blo
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void likeComment(long commentId, Long userId) {
         LambdaQueryWrapper<CommentLike> commentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         commentLikeLambdaQueryWrapper.eq(CommentLike::getCommentId, commentId).eq(CommentLike::getUserId, userId);
@@ -132,7 +132,7 @@ public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, Blo
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteComment(Long id, Long userId, boolean isAdmin) {
         BlogComments blogComments = this.getById(id);
         if (isAdmin) {
