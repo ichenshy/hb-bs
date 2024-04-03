@@ -94,9 +94,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     @Override
-    public long userRegister(String phone, String userAccount, String userPassword, String checkPassword,String code) {
+    public long userRegister(String phone, String userAccount, String userPassword, String checkPassword, String code) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(phone, userAccount, userPassword, checkPassword,code)) {
+        if (StringUtils.isAnyBlank(phone, userAccount, userPassword, checkPassword, code)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
@@ -111,18 +111,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (phoneNum >= 1) {
             throw new BusinessException(ErrorCode.FORBIDDEN, "该手机号已注册");
         }
-         String key = REGISTER_CODE_KEY + phone;
-         Boolean hasKey = stringRedisTemplate.hasKey(key);
-         if (Boolean.FALSE.equals(hasKey)) {
-             throw new BusinessException(ErrorCode.FORBIDDEN, "请先获取验证码");
-         }
-         String correctCode = stringRedisTemplate.opsForValue().get(key);
-         if (correctCode == null) {
-             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
-         }
-         if (!correctCode.equals(code)) {
-             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
-         }
+        String key = REGISTER_CODE_KEY + phone;
+        Boolean hasKey = stringRedisTemplate.hasKey(key);
+        if (Boolean.FALSE.equals(hasKey)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "请先获取验证码");
+        }
+        String correctCode = stringRedisTemplate.opsForValue().get(key);
+        if (correctCode == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        if (!correctCode.equals(code)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
+        }
         // 账户不能包含特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         Matcher accountMatcher = Pattern.compile(validPattern).matcher(userAccount);
@@ -164,7 +164,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!saveResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
-         stringRedisTemplate.delete(key);
+        stringRedisTemplate.delete(key);
         return user.getId();
     }
 
@@ -208,7 +208,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userStr = gson.toJson(safetyUser);
         stringRedisTemplate.opsForValue().set(LOGIN_USER_KEY + token, userStr);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, Duration.ofMinutes(15));
-        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE,userStr);
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE, userStr);
         stringRedisTemplate.expire(USER_LOGIN_STATE, Duration.ofMinutes(15));
         return token;
     }
@@ -327,7 +327,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Gson gson = new Gson();
         User user = gson.fromJson(userStr, User.class);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, TimeUnit.MINUTES);
-        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE,userStr);
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_STATE, userStr);
         stringRedisTemplate.expire(USER_LOGIN_STATE, Duration.ofMinutes(15));
         return user;
     }
@@ -553,18 +553,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void updatePassword(String phone, String password, String confirmPassword,String code) {
+    public void updatePassword(String phone, String password, String confirmPassword, String code) {
         if (!password.equals(confirmPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
         String key = REGISTER_CODE_KEY + phone;
-         String correctCode = stringRedisTemplate.opsForValue().get(key);
-         if (correctCode == null) {
-             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请先获取验证码");
-         }
-         if (!correctCode.equals(code)) {
-             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
-         }
+        String correctCode = stringRedisTemplate.opsForValue().get(key);
+        if (correctCode == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请先获取验证码");
+        }
+        if (!correctCode.equals(code)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
+        }
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userLambdaQueryWrapper.eq(User::getPhone, phone);
         User user = this.getOne(userLambdaQueryWrapper);
@@ -591,8 +591,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
 
 
-
-
             if (currentPage <= DEFAULT_CACHE_PAGE) {
                 Boolean hasKey = stringRedisTemplate.hasKey(key);
                 if (Boolean.TRUE.equals(hasKey)) {
@@ -611,10 +609,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 stringRedisTemplate.opsForValue().set(key, userVOPageStr);
                 return userVOPage;
             }
-
-
-
-
 
         } else {
             if (StringUtils.isNotBlank(username)) {
