@@ -22,8 +22,6 @@ import com.chen.service.UserService;
 import com.chen.utils.ValidateCodeUtils;
 import com.google.gson.Gson;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -107,8 +105,6 @@ public class UserController {
      */
     @GetMapping("/message")
     @ApiOperation(value = "发送验证码")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "phone", value = "手机号")})
     public BaseResponse<String> sendMessage(String phone) {
         if (StringUtils.isBlank(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -130,9 +126,6 @@ public class UserController {
      */
     @GetMapping("/message/update/phone")
     @ApiOperation(value = "发送手机号更新验证码")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "phone", value = "手机号"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<String> sendPhoneUpdateMessage(String phone, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -247,8 +240,6 @@ public class UserController {
      */
     @PostMapping("/logout")
     @ApiOperation(value = "用户登出")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -265,8 +256,6 @@ public class UserController {
 //     */
 //    @GetMapping("/getUserByPhone")
 //    @ApiOperation(value = "通过手机号查询用户")
-//    @ApiImplicitParams(
-//            {@ApiImplicitParam(name = "phone", value = "手机号")})
 //    public BaseResponse<String> getUserByPhone(String phone) {
 //        if (phone == null) {
 //            throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -295,9 +284,6 @@ public class UserController {
      */
     @GetMapping("/check")
     @ApiOperation(value = "校验验证码")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "phone", value = "手机号"),
-                    @ApiImplicitParam(name = "code", value = "验证码")})
     public BaseResponse<String> checkCode(String phone, String code) {
         String key = RedisConstants.USER_FORGET_PASSWORD_KEY + phone;
         String correctCode = stringRedisTemplate.opsForValue().get(key);
@@ -338,8 +324,6 @@ public class UserController {
      */
     @GetMapping("/current")
     @ApiOperation(value = "获取当前用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
 //        userService.getCurrentUser(request);
         User loginUser = userService.getLoginUser(request);
@@ -362,9 +346,6 @@ public class UserController {
      */
     @PostMapping("/delete")
     @ApiOperation(value = "删除用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "id", value = "用户id"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -389,8 +370,6 @@ public class UserController {
      */
     @GetMapping("/search/tags")
     @ApiOperation(value = "通过标签搜索用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "tagNameList", value = "标签列表")})
     public BaseResponse<Page<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList, long currentPage) {
         if (CollectionUtils.isEmpty(tagNameList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -408,9 +387,6 @@ public class UserController {
      */
     @GetMapping("/search")
     @ApiOperation(value = "通过用户名搜索用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "username", value = "用户名"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<List<User>> searchUsersByUserName(String username, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -437,9 +413,6 @@ public class UserController {
      */
     @PutMapping("/update")
     @ApiOperation(value = "更新用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "user", value = "用户更新请求参数"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<String> updateUser(@RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -474,8 +447,6 @@ public class UserController {
      */
     @GetMapping("/page")
     @ApiOperation(value = "用户分页")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "currentPage", value = "当前页")})
     public BaseResponse<Page<UserVO>> userPagination(long currentPage) {
         Page<UserVO> userVOPage = userService.userPage(currentPage);
         return ResultUtils.success(userVOPage);
@@ -490,9 +461,6 @@ public class UserController {
      */
     @GetMapping("/match")
     @ApiOperation(value = "获取匹配用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "currentPage", value = "当前页"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<Page<UserVO>> matchUsers(long currentPage, String username, HttpServletRequest request) {
         if (currentPage <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -511,9 +479,6 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取用户")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "id", value = "用户id"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<UserVO> getUserById(@PathVariable Long id, HttpServletRequest request) {
 //        boolean contains = bloomFilter.contains(USER_BLOOM_PREFIX + id);
 //        if (!contains) {
@@ -538,8 +503,6 @@ public class UserController {
      */
     @GetMapping("/tags")
     @ApiOperation(value = "获取当前用户标签")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<List<String>> getUserTags(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -558,9 +521,6 @@ public class UserController {
      */
     @PutMapping("/update/tags")
     @ApiOperation(value = "更新用户标签")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "tags", value = "标签"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<String> updateUserTags(@RequestBody List<String> tags, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -580,9 +540,6 @@ public class UserController {
      */
     @PostMapping("/sign/{userId}")
     @ApiOperation(value = "用户签到")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(name = "userId", value = "用户id"),
-                    @ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<Integer> userSigIn(@PathVariable Long userId, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
@@ -607,8 +564,8 @@ public class UserController {
             if (!doRateLimit) {
                 throw new BusinessException(ErrorCode.TOO_MANY_REQUEST);
             }
-           // 签到
-            Integer randomPoints = signService.sign(userId,signDate);
+            // 签到
+            Integer randomPoints = signService.sign(userId, signDate);
             return ResultUtils.success(randomPoints);
         }
     }
@@ -621,7 +578,6 @@ public class UserController {
      */
     @GetMapping("/my/list/sign")
     @ApiOperation(value = "历史签到")
-    @ApiImplicitParams({@ApiImplicitParam(name = "request", value = "request请求")})
     public BaseResponse<List<Sign>> userSign(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
