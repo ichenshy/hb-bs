@@ -33,7 +33,6 @@
           登 录
         </van-button>
         <van-button style="margin-top: 10px;background-color: #4e7abe;color: white" round block type="default"
-                    native-type="submit"
                     to="/user/signup">
           注 册
         </van-button>
