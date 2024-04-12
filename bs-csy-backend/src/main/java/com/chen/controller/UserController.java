@@ -588,4 +588,5 @@ public class UserController {
         log.info("我的签到次数：{}", signList.size());
         return ResultUtils.success(signList);
     }
+
 }

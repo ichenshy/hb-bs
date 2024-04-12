@@ -3,6 +3,7 @@ package com.chen.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chen.common.BaseResponse;
 import com.chen.model.domain.RouteInfo;
 import com.chen.model.domain.User;
 import com.chen.model.request.UserUpdateRequest;
@@ -89,6 +90,8 @@ public interface UserService extends IService<User> {
      */
     Page<UserVO> userPage(long currentPage);
 
+    Page<UserVO> userPageByAdmin(long currentPage);
+
     /**
      * 获取登录用户
      *
@@ -125,4 +128,7 @@ public interface UserService extends IService<User> {
 
     List<RouteInfo> selectMenus();
 
+    BaseResponse echarts();
+
+    boolean disabledUser(long id,Integer status);
 }

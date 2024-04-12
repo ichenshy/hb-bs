@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chen.common.BaseResponse;
 import com.chen.common.ErrorCode;
+import com.chen.common.ResultUtils;
 import com.chen.constants.UserConstants;
 import com.chen.exception.BusinessException;
 import com.chen.mapper.UserMapper;
@@ -35,8 +37,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -308,6 +312,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Page<UserVO> userPage(long currentPage) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("status", 0);
+        Page<User> page = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        Page<UserVO> userVOPage = new Page<>();
+        BeanUtils.copyProperties(page, userVOPage);
+        return userVOPage;
+    }
+
+    @Override
+    public Page<UserVO> userPageByAdmin(long currentPage) {
         Page<User> page = this.page(new Page<>(currentPage, PAGE_SIZE));
         Page<UserVO> userVOPage = new Page<>();
         BeanUtils.copyProperties(page, userVOPage);
@@ -653,6 +667,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public List<RouteInfo> selectMenus() {
         return userMapper.selectMenus();
     }
+
+    @Override
+    public BaseResponse echarts() {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getStatus, 0);
+        List<User> list = this.list(wrapper);
+        // 统计每个标签的出现次数
+        Map<String, Integer> tagCountMap = new HashMap<>();
+        for (User user : list) {
+            String tags = user.getTags();
+            // 将标签字符串转换为数组
+            String[] tagArray = tags.substring(1, tags.length() - 1).split(",");
+            // 去除每个标签中的引号
+            for (int i = 0; i < tagArray.length; i++) {
+                tagArray[i] = tagArray[i].replaceAll("[\\[\\]\"]", "");
+            }
+            // 统计每个标签的出现次数
+            for (String tag : tagArray) {
+                tagCountMap.put(tag, tagCountMap.getOrDefault(tag, 0) + 1);
+            }
+        }
+        // 将统计结果转换为ECharts所需的格式
+        List<Object> data = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : tagCountMap.entrySet()) {
+            Map item = new HashMap<String, Integer>();
+            item.put("value", entry.getValue());
+            item.put("name", entry.getKey());
+            data.add(item);
+        }
+        return ResultUtils.success(data);
+    }
+
+    @Override
+    public boolean disabledUser(long id, Integer status) {
+        User user = this.getById(id);
+        user.setStatus(status);
+        return this.updateById(user);
+    }
+
 }
 
 

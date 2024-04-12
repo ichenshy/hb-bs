@@ -99,8 +99,7 @@ export function InitForm(opt = {}) {
             if (!valid) return
             // 确定按钮变为加载状态
             DialogformRef.value.showLoading()
-            // 根据editId判断是新增还是修改   执行不同方式
-            const fun = editId.value ? opt.updata(editId.value, form) : opt.adddata(form)
+            // 执行修改用户信息
             // 请求完成
             fun.then(res => {
                 // 新增|更新(修改)后刷新数据

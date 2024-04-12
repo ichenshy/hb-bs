@@ -41,6 +41,15 @@
         <el-descriptions-item>
           <template #label>
             <el-icon>
+              <Message/>
+            </el-icon>
+            邮件地址
+          </template>
+          {{ $store.state.user.email }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <el-icon>
               <Location/>
             </el-icon>
             登陆IP
@@ -54,7 +63,7 @@
             </el-icon>
             角色
           </template>
-          {{ $store.state.user.role == 1 ? '管理员' : '用户' }}
+          {{ $store.state.user.role === 1 ? '管理员' : '用户' }}
         </el-descriptions-item>
         <el-descriptions-item>
           <template #label>
@@ -66,47 +75,16 @@
           {{ $store.state.user.profile }}
         </el-descriptions-item>
       </el-descriptions>
-      <el-button class="mt-2" type="primary" @click="UpData_Button($store.state.user)">修改</el-button>
     </el-card>
-    <FormDialog ref="DialogformRef" :title="Formtitle" @submit="FormSubmit" width="40%" :Buttontitle="Buttontitle">
-      <el-form :model="form" ref="formRef" :rules="rules" label-width="80px">
-        <div class="flex justify-between">
-          <el-form-item prop="avatar" label="头像">
-            <el-input v-model="form.avatarUrl" placeholder="头像地址"></el-input>
-          </el-form-item>
-          <el-form-item prop="username" label="用户名">
-            <el-input v-model="form.userAccount" placeholder="用户名"></el-input>
-          </el-form-item>
-        </div>
-        <div class="flex justify-between">
-          <el-form-item prop="name" label="昵称">
-            <el-input v-model="form.username" placeholder="昵称"></el-input>
-          </el-form-item>
-          <el-form-item prop="email" label="电话">
-            <el-input v-model="form.phone" placeholder="电话"></el-input>
-          </el-form-item>
-        </div>
-        <div class="flex justify-between">
-          <el-form-item prop="job" label="角色">
-            <el-input v-model="form.role" placeholder="角色"></el-input>
-          </el-form-item>
-          <el-form-item prop="text" label="个人简介">
-            <el-input v-model="form.profile" placeholder="个人简介" type="textarea"></el-input>
-          </el-form-item>
-        </div>
-      </el-form>
-    </FormDialog>
   </div>
 </template>
 
 <script setup>
 import {ref} from 'vue';
 import {ip} from '~/api/public';
-import FormDialog from "~/components/FormDialog.vue";
 import {InitForm} from '~/composables/Form.js'
 import {updateuser} from '~/api/manager.js'
 import store from '~/store'
-
 
 const ipData = ref({
   ip: "",
@@ -115,34 +93,26 @@ const ipData = ref({
 ip().then(res => {
   console.log(res.location)
   ipData.value = res.data
-
 })
+const imageUrl = ref('')
 const {
   form,
-  // 表单验证规则
-  rules,
   // 父级FormDialog的ref
   DialogformRef,
   // 表单el-form的ref
   formRef,
   // 表单按钮标题
-  Buttontitle,
-  // 表单标题
   Formtitle,
-  UpData_Button,
-  FormSubmit
 } = InitForm({
   title: "个人中心",
-  // 搜索表单
-  // searchKeyword: "",
   form: {
     id: store.state.user.uid,
-    avatar: "",
+    avatarUrl: "",
+    userAccount: "",
     username: "",
-    name: "",
+    phone: "",
     email: "",
-    job: "",
-    text: ""
+    profile: ""
   },
   Buttontitle_value: {
     title_1: '修改数据',
@@ -161,4 +131,30 @@ const {
   getdata: ip,
   updata: updateuser,
 })
+
 </script>
+
+
+<style scoped>
+.avatar-uploader .avatar {
+  width: 70px;
+  height: 70px;
+  display: block;
+}
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+</style>

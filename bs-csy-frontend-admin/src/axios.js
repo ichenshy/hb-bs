@@ -7,7 +7,6 @@ import { getToken } from '~/composables/auth'
 // 获取状态管理
 import store from "./store"
 // 引入加载动画状态
-import { ElLoading } from 'element-plus'
 
 // 创建实例axios
 const service = axios.create({
@@ -17,7 +16,6 @@ const service = axios.create({
 
 // 添加请求拦截器
 service.interceptors.request.use(function (config) {
-  //
   // 往header头自动添加token
   const token = getToken()
   // 如果有token

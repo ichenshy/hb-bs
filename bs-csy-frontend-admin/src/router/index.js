@@ -23,6 +23,8 @@ import User from "~/pages/user/user.vue";
 import Todolist from "~/pages/qiandao/todolist.vue";
 // 运行日志
 import Todolog from "~/pages/qiandao/todolog.vue";
+import Statistics from "~/pages/user/statistics.vue";
+import UserList from "~/pages/user/userList.vue";
 
 
 //默认路由,所有用户共享
@@ -61,7 +63,7 @@ const asyncRoutes = [
         path: "/home",
         component: Index,
         meta: {
-            title: ""
+            title: "首页"
         },
     },
     {
@@ -71,6 +73,21 @@ const asyncRoutes = [
             title: "",
         },
     },
+    {
+        path: "/user/list",
+        component: UserList,
+        meta: {
+            title: "用户信息管理",
+        },
+    },
+    {
+        path: "/statistics",
+        component: Statistics,
+        meta: {
+            title: "用户标签统计（图表）",
+        },
+    },
+
     {
         path: "/table",
         component: TableData,

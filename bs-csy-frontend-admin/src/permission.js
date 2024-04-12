@@ -48,7 +48,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 设置页面标题
-  let title = (to.meta.title ? to.meta.title : "陈胜源") + "-后台管理系统";
+  let title = (to.meta.title ? to.meta.title : "") + "-后台管理系统";
   document.title = title;
 
   // 如果有新路由则指定path,否则放行
