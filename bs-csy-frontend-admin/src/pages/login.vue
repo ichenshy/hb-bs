@@ -93,7 +93,7 @@ const onSubmit = () => {
 
 // 监听回车事件
 function onKeyUp(e) {
-  if (e.key == "Enter") onSubmit()
+  if (e.key === "Enter") onSubmit()
 }
 
 // 添加键盘监听
