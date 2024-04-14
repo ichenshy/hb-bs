@@ -44,14 +44,39 @@ export function getStatistics() {
 }
 
 // 用户管理
-export function getUserList(currentPage) {
-    return axios.get("/api/admin/userPageByAdmin?currentPage=" + currentPage)
+export function getUserList(currentPage,searchText) {
+    return axios.get(`/api/admin/userPageByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
 }
-// 用户管理
 export function disabledUser(id,status) {
     return axios.post(`/api/admin/disabledUser/${id}/${status}`)
 }
-// 用户管理
 export function updateUser(user) {
     return axios.post(`/api/admin/update`,user)
+}
+// 队伍管理
+export function teamPageByAdmin(currentPage,searchText) {
+    return axios.get(`/api/admin/teamPageByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
+}
+
+export function disabledTeam(id) {
+    return axios.post(`/api/admin/disabledTeam/${id}`)
+}
+export function joinUser(id) {
+    return axios.get(`/api/admin/joinUser/${id}`)
+}
+// 好友管理
+export function friendByAdmin(currentPage,searchText) {
+    return axios.get(`/api/admin/friendByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
+}
+// 博客管理
+export function blogByAdmin(currentPage,searchText) {
+    return axios.get(`/api/admin/blogByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
+}
+// 积分
+export function signByAdmin(currentPage,searchText) {
+    return axios.get(`/api/admin/signByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
+}
+// 聊天
+export function chatByAdmin(currentPage,searchText) {
+    return axios.get(`/api/admin/chatByAdmin?currentPage=${currentPage}&&searchText=${searchText}`)
 }

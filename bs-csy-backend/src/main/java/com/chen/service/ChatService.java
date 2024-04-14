@@ -1,10 +1,12 @@
 package com.chen.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chen.model.domain.Chat;
 import com.chen.model.domain.User;
 import com.chen.model.request.ChatRequest;
 import com.chen.model.vo.ChatMessageVO;
+import com.chen.model.vo.ChatVO;
 
 import java.util.Date;
 import java.util.List;
@@ -28,4 +30,6 @@ public interface ChatService extends IService<Chat> {
     List<ChatMessageVO> getTeamChat(ChatRequest chatRequest, int teamChat, User loginUser);
 
     List<ChatMessageVO> getHallChat(int chatType, User loginUser);
+
+    Page<ChatVO> chatByAdmin(long currentPage, String searchText);
 }

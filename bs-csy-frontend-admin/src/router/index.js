@@ -9,22 +9,15 @@ import Index from "~/pages/index.vue";
 import Login from "~/pages/login.vue";
 // 404页面
 import NotFound from "~/pages/404.vue";
-// 卡片列表
-import CardData from "~/pages/page/card.vue";
-// 表格列表
-import TableData from "~/pages/page/table.vue";
-// 系统参数设置
-import Config from "~/pages/system/config.vue";
-// 菜单管理
-import MenusList from "~/pages/system/menus.vue";
 // 个人中心
 import User from "~/pages/user/user.vue";
-// 签到任务
-import Todolist from "~/pages/qiandao/todolist.vue";
-// 运行日志
-import Todolog from "~/pages/qiandao/todolog.vue";
-import Statistics from "~/pages/user/statistics.vue";
 import UserList from "~/pages/user/userList.vue";
+import TeamList from "~/pages/user/teamList.vue";
+import Statistics from "~/pages/user/statistics.vue";
+import FriendList from "~/pages/user/friendList.vue";
+import Blog from "~/pages/user/blog.vue";
+import Sign from "~/pages/user/sign.vue";
+import Chat from "~/pages/user/chat.vue";
 
 
 //默认路由,所有用户共享
@@ -67,10 +60,10 @@ const asyncRoutes = [
         },
     },
     {
-        path: "/card",
-        component: CardData,
+        path: "/user",
+        component: User,
         meta: {
-            title: "",
+            title: "个人信息"
         },
     },
     {
@@ -81,56 +74,45 @@ const asyncRoutes = [
         },
     },
     {
+        path: "/team",
+        component: TeamList,
+        meta: {
+            title: "队伍信息管理",
+        },
+    },
+    {
         path: "/statistics",
         component: Statistics,
         meta: {
             title: "用户标签统计（图表）",
         },
     },
-
     {
-        path: "/table",
-        component: TableData,
+        path: "/friend",
+        component: FriendList,
         meta: {
-            title: "",
-        },
-    }
-    ,
-    {
-        path: "/sys/config",
-        component: Config,
-        meta: {
-            title: "",
-        },
-    }
-    ,
-    {
-        path: "/sys/menus",
-        component: MenusList,
-        meta: {
-            title: "",
-        },
-    }
-    ,
-    {
-        path: "/user",
-        component: User,
-        meta: {
-            title: "",
+            title: "好友列表管理",
         },
     },
     {
-        path: "/todolist",
-        component: Todolist,
+        path: "/blog",
+        component: Blog,
         meta: {
-            title: "",
+            title: "博客信息列表",
         },
     },
     {
-        path: "/todolog",
-        component: Todolog,
+        path: "/sign",
+        component: Sign,
         meta: {
-            title: "",
+            title: "签到记录列表",
+        },
+    },
+    {
+        path: "/chat",
+        component: Chat,
+        meta: {
+            title: "聊天室消息列表",
         },
     },
 

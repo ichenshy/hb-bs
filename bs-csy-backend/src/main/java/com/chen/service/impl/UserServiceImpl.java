@@ -321,8 +321,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Page<UserVO> userPageByAdmin(long currentPage) {
-        Page<User> page = this.page(new Page<>(currentPage, PAGE_SIZE));
+    public Page<UserVO> userPageByAdmin(long currentPage,String searchText) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        // 添加第二个条件
+        if (StringUtils.isNotBlank(searchText)) {
+            wrapper.like("user_account", searchText).or().like("phone", searchText).or().like("username", searchText);
+        }
+        Page<User> page = this.page(new Page<>(currentPage, PAGE_SIZE),wrapper);
         Page<UserVO> userVOPage = new Page<>();
         BeanUtils.copyProperties(page, userVOPage);
         return userVOPage;

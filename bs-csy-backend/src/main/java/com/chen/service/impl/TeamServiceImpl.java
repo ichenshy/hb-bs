@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chen.common.BaseResponse;
 import com.chen.common.ErrorCode;
+import com.chen.common.ResultUtils;
 import com.chen.mapper.TeamMapper;
 import com.chen.model.domain.Follow;
 import com.chen.model.domain.Team;
@@ -643,8 +645,74 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         return userTeamService.count(userTeamQueryWrapper);
     }
 
+
+    @Override
+    public Page<TeamVO> teamPageByAdmin(long currentPage, String searchText) {
+        QueryWrapper<Team> wrapper = new QueryWrapper<>();
+        // 添加第二个条件
+        if (StringUtils.isNotBlank(searchText)) {
+            wrapper.like("name", searchText).or().like("description", searchText);
+        }
+        Page<Team> teamPage = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        if (CollectionUtils.isEmpty(teamPage.getRecords())) {
+            return new Page<>();
+        }
+        Page<TeamVO> teamVOPage = new Page<>();
+        // 关联查询创建人的用户信息
+        BeanUtils.copyProperties(teamPage, teamVOPage, "records");
+        List<Team> teamPageRecords = teamPage.getRecords();
+        ArrayList<TeamVO> teamUserVOList = new ArrayList<>();
+        for (Team team : teamPageRecords) {
+            Long userId = team.getUserId();
+            if (userId == null) {
+                continue;
+            }
+            User user = userService.getById(userId);
+            QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("team_id", team.getId());
+            long hasJoinNum = userTeamService.count(userTeamQueryWrapper);
+            TeamVO teamUserVO = new TeamVO();
+            BeanUtils.copyProperties(team, teamUserVO);
+            // 脱敏用户信息
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(user, userVO);
+            teamUserVO.setCreateUser(userVO);
+            teamUserVO.setHasJoinNum(hasJoinNum);
+            teamUserVOList.add(teamUserVO);
+        }
+        teamVOPage.setRecords(teamUserVOList);
+        return teamVOPage;
+    }
+
+    @Override
+    public boolean disabledTeam(long id) {
+        return this.removeById(id);
+    }
+
+    @Override
+    public BaseResponse joinUser(long id) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("team_id", id);
+        List<UserTeam> list = userTeamService.list(userTeamQueryWrapper);
+        List<Long> userList = new ArrayList<>();
+        list.forEach(userTeam -> {
+            Long userId = userTeam.getUserId();
+            userList.add(userId);
+        });
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.in("id", userList);
+        List<User> users = userService.list(wrapper);
+        List<UserVO> userVoS = new ArrayList<>();
+        for (User user : users) {
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(user, userVO);
+            userVoS.add(userVO);
+        }
+        return ResultUtils.success(userVoS);
+
+
+    }
 }
-
-
-
-

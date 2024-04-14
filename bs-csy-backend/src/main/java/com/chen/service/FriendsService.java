@@ -1,10 +1,12 @@
 package com.chen.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chen.model.domain.Friends;
 import com.chen.model.domain.User;
 import com.chen.model.request.FriendAddRequest;
 import com.chen.model.vo.FriendsRecordVO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chen.model.vo.FriendsVO;
 
 import java.util.List;
 import java.util.Set;
@@ -75,4 +77,6 @@ public interface FriendsService extends IService<Friends> {
      * @return
      */
     boolean toRead(User loginUser, Set<Long> ids);
+
+    Page<FriendsVO> friendByAdmin(long currentPage, String searchText);
 }

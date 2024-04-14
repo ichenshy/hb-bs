@@ -90,7 +90,7 @@ public interface UserService extends IService<User> {
      */
     Page<UserVO> userPage(long currentPage);
 
-    Page<UserVO> userPageByAdmin(long currentPage);
+    Page<UserVO> userPageByAdmin(long currentPage,String searchText);
 
     /**
      * 获取登录用户

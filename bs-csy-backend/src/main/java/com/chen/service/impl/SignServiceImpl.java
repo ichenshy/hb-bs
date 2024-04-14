@@ -1,22 +1,32 @@
 package com.chen.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chen.common.ErrorCode;
 import com.chen.exception.BusinessException;
 import com.chen.mapper.SignMapper;
 import com.chen.model.domain.Sign;
 import com.chen.model.domain.Standings;
+import com.chen.model.domain.User;
+import com.chen.model.vo.SignVO;
+import com.chen.model.vo.UserVO;
 import com.chen.service.SignService;
 import com.chen.service.StandingsService;
+import com.chen.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import static com.chen.constants.SystemConstants.PAGE_SIZE;
 
 /**
  * @author ChenShengyuan
@@ -29,6 +39,8 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign>
         implements SignService {
     @Resource
     private StandingsService standingsService;
+    @Resource
+    private UserService userService;
 
     /**
      * 每日签到
@@ -68,6 +80,28 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign>
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "保存失败");
         }
         return randomPoints;
+    }
+
+    @Override
+    public Page<SignVO> signByAdmin(long currentPage, String searchText) {
+        QueryWrapper<Sign> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("fraction");
+        Page<Sign> SignPage = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        List<Sign> records = SignPage.getRecords();
+        List<SignVO> list = records.stream().map(sign -> {
+            Long userId = sign.getUserId();
+            User user = userService.getById(userId);
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(user, userVO);
+            SignVO signVO = new SignVO();
+            BeanUtils.copyProperties(sign, signVO);
+            signVO.setUser(userVO);
+            return signVO;
+        }).collect(Collectors.toList());
+        Page<SignVO> signVOPage = new Page<SignVO>();
+        BeanUtils.copyProperties(SignPage, signVOPage);
+        signVOPage.setRecords(list);
+        return signVOPage;
     }
 }
 

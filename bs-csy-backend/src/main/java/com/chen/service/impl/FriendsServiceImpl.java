@@ -4,17 +4,20 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.Gson;
 import com.chen.common.ErrorCode;
+import com.chen.exception.BusinessException;
 import com.chen.mapper.FriendsMapper;
 import com.chen.model.domain.Friends;
 import com.chen.model.domain.User;
 import com.chen.model.request.FriendAddRequest;
 import com.chen.model.vo.FriendsRecordVO;
+import com.chen.model.vo.FriendsVO;
 import com.chen.service.FriendsService;
 import com.chen.service.UserService;
-import com.chen.exception.BusinessException;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
@@ -24,13 +27,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static com.chen.constants.FriendConstant.*;
+import static com.chen.constants.FriendConstant.AGREE_STATUS;
+import static com.chen.constants.FriendConstant.DEFAULT_STATUS;
+import static com.chen.constants.FriendConstant.EXPIRED_STATUS;
+import static com.chen.constants.FriendConstant.NOT_READ;
+import static com.chen.constants.FriendConstant.READ;
+import static com.chen.constants.FriendConstant.REVOKE_STATUS;
 import static com.chen.constants.RedissonConstant.APPLY_LOCK;
+import static com.chen.constants.SystemConstants.PAGE_SIZE;
 
 /**
  * @author ChenShengyuan
@@ -219,6 +233,36 @@ public class FriendsServiceImpl extends ServiceImpl<FriendsMapper, Friends>
         }
         friend.setStatus(REVOKE_STATUS);
         return this.updateById(friend);
+    }
+
+    @Override
+    public Page<FriendsVO> friendByAdmin(long currentPage, String searchText) {
+        QueryWrapper<Friends> wrapper = new QueryWrapper<>();
+        // 添加第二个条件
+        if (StringUtils.isNotBlank(searchText)) {
+            wrapper.like("remark", searchText);
+        }
+        Page<Friends> friendsPage = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        if (CollectionUtils.isEmpty(friendsPage.getRecords())) {
+            return new Page<>();
+        }
+        List<Friends> records = friendsPage.getRecords();
+        ArrayList<FriendsVO> friendsVOS = new ArrayList<>();
+        for (Friends record : records) {
+            Long fromId = record.getFromId();
+            Long receiveId = record.getReceiveId();
+            String fromUserName = userService.getById(fromId).getUsername();
+            String receiveUserName = userService.getById(receiveId).getUsername();
+            FriendsVO friendsVO = new FriendsVO();
+            BeanUtils.copyProperties(record, friendsVO);
+            friendsVO.setFromName(fromUserName);
+            friendsVO.setReceiveName(receiveUserName);
+            friendsVOS.add(friendsVO);
+        }
+        Page<FriendsVO> friendsVOPage = new Page<>();
+        BeanUtils.copyProperties(friendsPage, friendsVOPage);
+        friendsVOPage.setRecords(friendsVOS);
+        return friendsVOPage;
     }
 }
 

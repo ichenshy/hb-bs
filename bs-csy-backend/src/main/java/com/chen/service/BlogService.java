@@ -28,4 +28,6 @@ public interface BlogService extends IService<Blog> {
     void deleteBlog(Long blogId, Long userId, boolean isAdmin);
 
     void updateBlog(BlogUpdateRequest blogUpdateRequest, Long userId, boolean isAdmin);
+
+    Page<BlogVO> blogByAdmin(long currentPage, String searchText);
 }

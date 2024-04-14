@@ -34,6 +34,11 @@ public class TeamVO implements Serializable {
      */
     @ApiModelProperty(value = "描述")
     private String description;
+    /**
+     * 密码
+     */
+    @ApiModelProperty(value = "密码")
+    private String password;
 
     /**
      * 封面图片
@@ -74,7 +79,7 @@ public class TeamVO implements Serializable {
     /**
      * 更新时间
      */
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
     /**

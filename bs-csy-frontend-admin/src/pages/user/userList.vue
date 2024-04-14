@@ -1,4 +1,14 @@
 <template>
+  <div>
+    <el-form :inline="true" :model="searchText" class="demo-form-inline">
+      <el-form-item label="模糊匹配">
+        <el-input v-model="searchText" placeholder="根据用户名昵称与手机号查询" clearable/>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">搜索</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
   <el-table :data="tableData" stripe style="width: 100%">
     <el-table-column prop="id" label="编号"/>
     <el-table-column prop="userAccount" label="账号"/>
@@ -38,7 +48,7 @@
   />
 </template>
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {disabledUser, getUserList} from "~/api/page";
 import {ElMessageBox} from "element-plus";
 import {toast} from "~/composables/util";
@@ -47,8 +57,12 @@ const tableData = ref([])
 const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
-const getList = async (currentPage) => {
-  const res = await getUserList(currentPage);
+const searchText = ref('')
+const onSubmit = () => {
+  getList(1, searchText.value)
+}
+const getList = async (currentPage, searchText) => {
+  const res = await getUserList(currentPage, searchText);
   tableData.value = res.data.records.map(record => ({
     ...record,
     role: record.role === 1 ? '管理员' : '用户',
@@ -60,11 +74,11 @@ const getList = async (currentPage) => {
 };
 
 onMounted(() => {
-  getList(1);
+  getList(1, '');
 });
 const handleCurrentChange = (page) => {
   currentPage.value = page;
-  getList(currentPage.value);
+  getList(currentPage.value, '');
 };
 const disabled = (row, status) => {
   ElMessageBox.alert(`确定要禁用账号为${row.userAccount}的用户吗`, '提示', {
@@ -86,7 +100,6 @@ const disUser = (row, status) => {
 
 }
 
-
 </script>
 
 <style scoped>
@@ -94,5 +107,13 @@ const disUser = (row, status) => {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+
+.demo-form-inline .el-input {
+  --el-input-width: 220px;
+}
+
+.demo-form-inline .el-select {
+  --el-select-width: 220px;
 }
 </style>

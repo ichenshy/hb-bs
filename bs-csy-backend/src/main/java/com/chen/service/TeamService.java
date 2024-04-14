@@ -3,6 +3,7 @@ package com.chen.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chen.common.BaseResponse;
 import com.chen.model.domain.Team;
 import com.chen.model.domain.User;
 import com.chen.model.request.*;
@@ -46,4 +47,10 @@ public interface TeamService extends IService<Team> {
     void kickOut(Long teamId, Long userId, Long loginUserId,boolean admin);
 
     Page<TeamVO> listMyCreate(long currentPage, Long userId);
+
+    Page<TeamVO> teamPageByAdmin(long currentPage, String searchText);
+
+    boolean disabledTeam(long id);
+
+    BaseResponse joinUser(long id);
 }

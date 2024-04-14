@@ -1,7 +1,9 @@
 package com.chen.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chen.model.domain.Sign;
+import com.chen.model.vo.SignVO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -21,4 +23,6 @@ public interface SignService extends IService<Sign> {
      */
     @Transactional(rollbackFor = Exception.class)
     Integer sign(Long userId, LocalDate signDate);
+
+    Page<SignVO> signByAdmin(long currentPage, String searchText);
 }

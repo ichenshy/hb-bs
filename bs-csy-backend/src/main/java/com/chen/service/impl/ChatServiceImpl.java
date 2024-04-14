@@ -3,19 +3,26 @@ package com.chen.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chen.common.ErrorCode;
+import com.chen.exception.BusinessException;
 import com.chen.mapper.ChatMapper;
 import com.chen.model.domain.Chat;
 import com.chen.model.domain.Team;
 import com.chen.model.domain.User;
 import com.chen.model.request.ChatRequest;
 import com.chen.model.vo.ChatMessageVO;
+import com.chen.model.vo.ChatVO;
+import com.chen.model.vo.TeamVO;
+import com.chen.model.vo.UserVO;
 import com.chen.model.vo.WebSocketVO;
 import com.chen.service.ChatService;
 import com.chen.service.TeamService;
 import com.chen.service.UserService;
-import com.chen.exception.BusinessException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -27,7 +34,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.chen.constants.ChatConstant.*;
+import static com.chen.constants.ChatConstant.CACHE_CHAT_HALL;
+import static com.chen.constants.ChatConstant.CACHE_CHAT_PRIVATE;
+import static com.chen.constants.ChatConstant.CACHE_CHAT_TEAM;
+import static com.chen.constants.SystemConstants.PAGE_SIZE;
 import static com.chen.constants.UserConstants.ADMIN_ROLE;
 
 /**
@@ -36,8 +46,7 @@ import static com.chen.constants.UserConstants.ADMIN_ROLE;
  * @createDate 2023-06-17 21:50:15
  */
 @Service
-public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat>
-        implements ChatService {
+public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat> implements ChatService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -60,11 +69,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat>
             return chatRecords;
         }
         LambdaQueryWrapper<Chat> chatLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        chatLambdaQueryWrapper.
-                and(privateChat -> privateChat.eq(Chat::getFromId, loginUser.getId()).eq(Chat::getToId, toId)
-                        .or().
-                        eq(Chat::getToId, loginUser.getId()).eq(Chat::getFromId, toId)
-                ).eq(Chat::getChatType, chatType);
+        chatLambdaQueryWrapper.and(privateChat -> privateChat.eq(Chat::getFromId, loginUser.getId()).eq(Chat::getToId, toId).or().eq(Chat::getToId, loginUser.getId()).eq(Chat::getFromId, toId)).eq(Chat::getChatType, chatType);
         // 两方共有聊天
         List<Chat> list = this.list(chatLambdaQueryWrapper);
         List<ChatMessageVO> chatMessageVOList = list.stream().map(chat -> {
@@ -202,6 +207,47 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat>
             ChatMessageVO.setCreateTime(DateUtil.format(chat.getCreateTime(), "yyyy年MM月dd日 HH:mm:ss"));
             return ChatMessageVO;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ChatVO> chatByAdmin(long currentPage, String searchText) {
+        QueryWrapper<Chat> wrapper = new QueryWrapper<>();
+        // 添加第二个条件
+        if (StringUtils.isNotBlank(searchText)) {
+            wrapper.like("text", searchText);
+        }
+        Page<Chat> chatPage = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        if (CollectionUtils.isEmpty(chatPage.getRecords())) {
+            return new Page<>();
+        }
+        Page<ChatVO> chatVoPage = new Page<>();
+        BeanUtils.copyProperties(chatPage, chatVoPage, "records");
+        List<ChatVO> collect = chatPage.getRecords().stream().map(chat -> {
+            Long fromId = chat.getFromId();
+            User fromUser = userService.getById(fromId);
+            UserVO fromUserVO = new UserVO();
+            BeanUtils.copyProperties(fromUser, fromUserVO);
+            ChatVO chatVO = new ChatVO();
+            UserVO toUserVO = new UserVO();
+            TeamVO teamVO = new TeamVO();
+            if (chat.getChatType() == 1) {
+                Long toId = chat.getToId();
+                User toUser = userService.getById(toId);
+                BeanUtils.copyProperties(toUser, toUserVO);
+            }
+            if (chat.getChatType() == 2) {
+                Long teamId = chat.getTeamId();
+                Team toTeam = teamService.getById(teamId);
+                BeanUtils.copyProperties(toTeam, teamVO);
+            }
+            BeanUtils.copyProperties(chat,chatVO);
+            chatVO.setFromUser(fromUserVO);
+            chatVO.setToUser(toUserVO);
+            chatVO.setTeamVO(teamVO);
+            return chatVO;
+        }).collect(Collectors.toList());
+        chatVoPage.setRecords(collect);
+        return chatVoPage;
     }
 }
 

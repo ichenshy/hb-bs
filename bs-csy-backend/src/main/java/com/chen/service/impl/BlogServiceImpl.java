@@ -1,6 +1,7 @@
 package com.chen.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chen.common.ErrorCode;
@@ -278,6 +279,39 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         blog.setTitle(blogUpdateRequest.getTitle());
         blog.setContent(blogUpdateRequest.getContent());
         this.updateById(blog);
+    }
+
+    @Override
+    public Page<BlogVO> blogByAdmin(long currentPage, String searchText) {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        // 添加第二个条件
+        if (StringUtils.isNotBlank(searchText)) {
+            wrapper.like("title", searchText).or().like("content", searchText);
+        }
+        wrapper.orderByDesc("create_time");
+        Page<Blog> blogPage = this.page(new Page<>(currentPage, PAGE_SIZE), wrapper);
+        Page<BlogVO> blogVoPage = new Page<>();
+        BeanUtils.copyProperties(blogPage, blogVoPage);
+        List<BlogVO> blogVOList = blogPage.getRecords().stream().map((blog) -> {
+            BlogVO blogVO = new BlogVO();
+            BeanUtils.copyProperties(blog, blogVO);
+            Long userId = blog.getUserId();
+            User user = userService.getById(userId);
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(user, userVO);
+            blogVO.setAuthor(userVO);
+            return blogVO;
+        }).collect(Collectors.toList());
+        for (BlogVO blogVO : blogVOList) {
+            String images = blogVO.getImages();
+            if (images == null) {
+                continue;
+            }
+            String[] imgStrs = images.split(",");
+            blogVO.setCoverImage(imgStrs[0]);
+        }
+        blogVoPage.setRecords(blogVOList);
+        return blogVoPage;
     }
 }
 
