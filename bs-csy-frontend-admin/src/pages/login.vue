@@ -2,8 +2,8 @@
   <el-row class="login-container">
     <el-col :lg="16" :md="12" class="left">
       <div align="center">
-        <div>欢迎光临 🎓</div>
-        <div><img src="/logo.png"/></div>
+        <div> 管理端登录</div>
+        <div>基于微服务的伙伴匹配平台的设计与实现</div>
       </div>
     </el-col>
     <el-col :lg="8" :md="12" class="right">
@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .login-container {
   @apply min-h-screen;
-  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+  background-image: linear-gradient(120deg, #ecf0f6 0%, #05a4ee 100%);
 }
 
 .login-container .left,
