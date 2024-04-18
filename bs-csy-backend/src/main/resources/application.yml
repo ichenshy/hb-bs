@@ -47,7 +47,7 @@ campus:
 aliyun:
   oss:
     file:
-      endpoint: oss-cn-beijing.aliyuncs.com
-      keyid: LTAI5t7ozg7VyaMgqod5VhLJ
-      keysecret: xaIAQ2TKVvxYfuM1IexQVUUc80ejlQ
-      bucketname: csybs
+      endpoint: ###
+      keyid: ###
+      keysecret: ###
+      bucketname: ###
